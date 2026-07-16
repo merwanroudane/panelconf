@@ -20,6 +20,7 @@ a diagram, and runnable Stata do-files.
 | **`guides/`** | Self-contained HTML guides (open in any browser, work offline) |
 | **`lecture/`** | Two LaTeX lectures (`.tex` + compiled `.pdf`) and the generations diagram |
 | **`stata_do_files/`** | 21 beginner do-files — one per command, on real data |
+| **`papers/`** | Reference index: every method → its source paper, with clickable DOIs |
 
 ---
 
@@ -119,6 +120,17 @@ F-SURMG, **F-CCEMG**) · `xtpfardl` (Fourier panel ARDL / CS-ARDL, needs `xtdcce
 `xtpcaus` (Fourier Toda–Yamamoto & Panel Quantile Causality)
 
 ---
+
+## 📚 Source papers (`papers/`)
+
+**[`papers/README.md`](papers/README.md)** indexes every method → its source paper, with a
+clickable **DOI** and the command that implements it.
+
+> **Copyright note.** The paper PDFs are **not redistributed here**. Almost all are published by
+> Elsevier, Wiley, Taylor & Francis or Oxford University Press, or distributed via JSTOR, and are
+> protected by copyright — JSTOR's terms prohibit redistribution explicitly. Use the DOI links:
+> they resolve to the publisher's official version. The single PDF included
+> (`Karavias_Tzavalis_Zhang_2022_Econometrics.pdf`) is **open access under CC BY**.
 
 ## 📚 Built on
 
