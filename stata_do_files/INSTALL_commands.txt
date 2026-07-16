@@ -38,6 +38,12 @@ ssc install xtpvarcoint, replace       // file 16
 *--- Break detection (file 17) ---------------------------------*
 ssc install xtgets, replace            // file 17
 
+*--- Second-generation estimators, Fourier ARDL, causality (18-20) ---*
+ssc install xtfmg, replace             // file 18  (FE, MG, CCEMG, SURMG, F-SURMG, F-CCEMG)
+ssc install xtpfardl, replace          // file 19  (Fourier panel ARDL / CS-ARDL)
+ssc install xtdcce2, replace           // file 19 REQUIRES this (Ditzen) as its engine
+ssc install xtpcaus, replace           // file 20  (PFTY & Panel Quantile Causality)
+
 
 *==============================================================*
 *  NOTES

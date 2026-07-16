@@ -90,6 +90,10 @@ All 18 files were executed and verified on real data.
 **Estimators:** `xtbreakmodel` · `xtcbc` · `xtkpybreak` · `xtbfkbreak` ·
 `xtquantilebreak` · `xtdynestimb` · `xtpvarcoint`
 
+**Second-generation estimators, Fourier ARDL & causality:** `xtfmg` (FE, MG, CCEMG, SURMG,
+F-SURMG, **F-CCEMG**) · `xtpfardl` (Fourier panel ARDL / CS-ARDL, needs `xtdcce2`) ·
+`xtpcaus` (Fourier Toda–Yamamoto & Panel Quantile Causality)
+
 ---
 
 ## 📚 Built on

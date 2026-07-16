@@ -34,6 +34,9 @@ Both ship with Stata; nothing to download. The panel is short (T = 20) — ideal
 | 15 | `xtdynestimb` | Dynamic panel robust to breaks |
 | 16 | `xtpvarcoint` | Panel VAR with cointegration + breaks |
 | 17 | `xtgets` | Automatic break detection |
+| 18 | `xtfmg` | 2nd-gen heterogeneous estimators: FE, MG, CCEMG, SURMG, F-SURMG, **F-CCEMG** (+ `map`, `breaks`) |
+| 19 | `xtpfardl` | **Fourier-augmented panel ARDL / CS-ARDL** (long-run + short-run) — needs `xtdcce2` |
+| 20 | `xtpcaus` | **Panel causality**: Fourier Toda–Yamamoto (PFTY) & Panel Quantile Causality (PQC) |
 | 99 | — | Run everything in order |
 
 ## How to run

@@ -30,5 +30,8 @@ do 14_xtquantilebreak.do
 do 15_xtdynestimb.do
 do 16_xtpvarcoint.do
 do 17_xtgets.do
+do 18_xtfmg.do
+do 19_xtpfardl.do
+do 20_xtpcaus.do
 
 display "All example do-files finished."
