@@ -1,0 +1,279 @@
+================================================================================
+ SOURCE PAPERS - REFERENCE INDEX
+ Structural Breaks in Panel Data  (panelconf)
+ Compiled by Dr Merwan Roudane
+ ideas.repec.org/f/pro1421  |  github.com/merwanroudane
+================================================================================
+
+ COPYRIGHT NOTE
+ --------------
+ The paper PDFs are NOT redistributed in this repository. Almost all are
+ published by Elsevier, Wiley, Taylor & Francis or Oxford University Press,
+ or distributed via JSTOR, and are protected by copyright (JSTOR's terms
+ prohibit redistribution explicitly). Use the DOI links below - they always
+ resolve to the publisher's official version.
+
+ The one PDF included, Karavias_Tzavalis_Zhang_2022_Econometrics.pdf, is
+ open access under a CC BY licence.
+
+ DOIs marked [OK] were read directly from the papers themselves.
+ Entries without a DOI give the full citation so the paper is findable.
+
+ Please cite the original methodological papers when using the xt* commands.
+
+
+================================================================================
+ 1. CROSS-SECTIONAL DEPENDENCE & CCE
+================================================================================
+
+Pesaran, M.H. (2006).
+  Estimation and inference in large heterogeneous panels with a multifactor
+  error structure.
+  Econometrica 74(4), 967-1012.
+  DOI  [OK]  10.1111/j.1468-0262.2006.00692.x
+  ->   CCE base (CCEMG, CCEP)
+
+Pesaran, M.H. (2007).
+  A simple panel unit root test in the presence of cross-section dependence.
+  Journal of Applied Econometrics 22(2), 265-312.
+  ->   CIPS / CADF base
+
+Kapetanios, G., Pesaran, M.H. & Yamagata, T. (2011).
+  Panels with non-stationary multifactor error structures.
+  Journal of Econometrics 160(2), 326-348.
+  DOI  [OK]  10.1016/j.jeconom.2010.10.001
+  ->   xtkpybreak cce      (CCE stays valid with I(1) factors)
+
+Bai, J. & Ng, S. (2004).
+  A PANIC attack on unit roots and cointegration.
+  Econometrica 72(4), 1127-1177.
+  ->   PANIC base
+
+Chudik, A. & Pesaran, M.H. (2015).
+  Common correlated effects estimation of heterogeneous dynamic panels.
+  Journal of Econometrics 188(2).
+  ->   dynamic CCE / CS-ARDL base
+
+Guliyev, H. (2026).
+  Second-generation heterogeneous panel data model with individual and
+  common shocks (F-CCEMG, F-SURMG).
+  arXiv working paper.
+  URL  arXiv:2606.29063   https://arxiv.org/abs/2606.29063
+  ->   xtfmg fccemg
+
+
+================================================================================
+ 2. PANEL UNIT ROOT / STATIONARITY WITH BREAKS
+================================================================================
+
+Carrion-i-Silvestre, J.L., del Barrio-Castro, T. & Lopez-Bazo, E. (2005).
+  Breaking the panels: an application to the GDP per capita.
+  Econometrics Journal 8(2), 159-175.
+  URL  [OK]  https://www.jstor.org/stable/23113636
+  ->   xtpkpss
+
+Corakci, A. & Omay, T. (2023).
+  Is there convergence in renewable energy deployment? Evidence from a new
+  panel unit root test with smooth and sharp structural breaks.
+  Renewable Energy 205, 648-662.
+  ->   xtpqroot, fourier   (the tFR test)
+
+Nazlioglu, S. & Karul, C. (2017).
+  A panel stationarity test with gradual structural shifts.
+  Economic Modelling.
+  ->   Fourier panel KPSS
+
+Karavias, Y., Tzavalis, E. & Zhang, H. (2022).
+  Missing values in panel data unit root tests.
+  Econometrics 10(1), 12.
+  DOI  [OK]  10.3390/econometrics10010012
+  ->   xtmunitroot
+  ***  OPEN ACCESS (CC BY) - PDF INCLUDED IN THIS FOLDER  ***
+
+
+================================================================================
+ 3. PANEL COINTEGRATION WITH BREAKS
+================================================================================
+
+Westerlund, J. (2006).
+  Testing for panel cointegration with multiple structural breaks.
+  Oxford Bulletin of Economics and Statistics 68(1), 101-132.
+  ->   xtlmbreak          (H0: cointegration)
+
+Westerlund, J. & Edgerton, D.L. (2007).
+  A panel bootstrap cointegration test.
+  Economics Letters 97(3), 185-190.
+  ->   xtpcointegboot     (H0: cointegration)
+
+Westerlund, J. & Edgerton, D.L. (2008).
+  A simple test for cointegration in dependent panels with structural breaks.
+  Oxford Bulletin of Economics and Statistics 70(5), 665-704.
+  ->   xtpcointegwe       (H0: no cointegration)
+
+Banerjee, A. & Carrion-i-Silvestre, J.L. (2015).
+  Cointegration in panel data with structural breaks and cross-section
+  dependence.
+  Journal of Applied Econometrics.
+  ->   xtbreakcoint
+
+Banerjee, A. & Carrion-i-Silvestre, J.L. (2017).
+  Testing for panel cointegration using common correlated effects estimators.
+  Journal of Time Series Analysis 38(4), 610-636.
+  DOI  [OK]  10.1111/jtsa.12234
+  ->   xtccecoint
+
+Banerjee, A. & Carrion-i-Silvestre, J.L. (2025).
+  Panel data cointegration testing with structural instabilities.
+  Journal of Business & Economic Statistics 43(1), 122-133.
+  DOI  [OK]  10.1080/07350015.2024.2327844
+  ->   xtcadfcoint    (breaks in deterministics + vector + loadings)
+
+Omay, T., Emirmahmutoglu, F. & Denaux, Z.S. (2017).
+  Nonlinear error correction based cointegration test in panel data.
+  Economics Letters 157, 1-4.
+  ->   xtnonlincoint
+
+Olayeni, R.O., Tiwari, A.K. & Wohar, M.E. (2021).
+  Fractional frequency flexible Fourier form (FFFFF) for panel cointegration
+  test.
+  Applied Economics Letters 28(6), 482-486.
+  DOI  [OK]  10.1080/13504851.2020.1761526
+  ->   FFFFF / xtpfardl
+
+
+================================================================================
+ 4. STRUCTURAL-BREAK ESTIMATORS
+================================================================================
+
+Bai, J. & Perron, P. (1998).
+  Estimating and testing linear models with multiple structural changes.
+  Econometrica 66(1), 47-78.
+  DOI  [OK]  10.2307/2998540
+  ->   the break-date engine behind everything
+
+Bai, J. & Perron, P. (2003).
+  Computation and analysis of multiple structural change models.
+  Journal of Applied Econometrics 18(1), 1-22.
+  DOI  [OK]  10.1002/jae.659
+  ->   dynamic-programming algorithm
+
+Qian, J. & Su, L. (2016).
+  Shrinkage estimation of common breaks in panel data models via adaptive
+  group fused lasso.
+  Journal of Econometrics 191(1), 86-109.
+  ->   xtbreakmodel, method(pls)
+
+Baltagi, B.H., Feng, Q. & Kao, C. (2016).
+  Estimation of heterogeneous panels with structural breaks.
+  Journal of Econometrics 191(1), 176-195.
+  ->   xtbreakmodel, method(bfk)
+
+Baltagi, B.H., Feng, Q. & Kao, C. (2019).
+  Structural changes in heterogeneous panels with endogenous regressors.
+  Working Paper No. 214, Center for Policy Research, Syracuse University.
+  ->   xtbfkbreak
+
+Baltagi, B.H., Feng, Q. & Wang, W. (2025).
+  Nonstationary heterogeneous panels with multiple structural changes.
+  Econometric Reviews.
+  DOI  [OK]  10.1080/07474938.2025.2480626
+  ->   xtkpybreak break   (breaks in slopes K0 AND loadings K1, I(1) factors)
+
+Okui, R. & Wang, W. (2021).
+  Heterogeneous structural breaks in panel data models.
+  Journal of Econometrics 220(2), 447-473.
+  ->   xtbreakmodel, method(gagfl)    (latent groups + GAGFL)
+
+Li, F., Xiao, Y. & Chen, Z.
+  Estimation of common breaks in linear panel data models via screening and
+  ranking algorithm.
+  Working paper.
+  ->   xtbreakmodel, method(sara)
+
+Kaddoura, Y. (2025).
+  Estimating coefficient-by-coefficient breaks in panel data models.
+  Journal of Econometrics 249, 106005.
+  ->   xtcbc
+
+Kaddoura, Y. & Westerlund, J. (2023).
+  Estimation of panel data models with random interactive effects and
+  multiple structural breaks when T is fixed.
+  Journal of Business & Economic Statistics 41(3), 778-790.
+  ->   xtcbc, csdemean
+
+Zhang, L., Zhu, Z., Feng, X. & He, Y. (2022).
+  Shrinkage quantile regression for panel data with multiple structural
+  breaks.
+  Canadian Journal of Statistics 50(3), 820-851.
+  ->   xtquantilebreak
+
+Bonhomme, S. & Manresa, E. (2015).
+  Grouped patterns of heterogeneity in panel data.
+  Econometrica 83(3), 1147-1184.
+  ->   the GFE initialisation step inside GAGFL
+
+
+================================================================================
+ 5. FOUNDATIONS
+================================================================================
+
+Pesaran, M.H. & Smith, R. (1995).
+  Estimating long-run relationships from dynamic heterogeneous panels.
+  Journal of Econometrics 68(1).                          -> Mean Group (MG)
+
+Pesaran, M.H., Shin, Y. & Smith, R. (1999).
+  Pooled mean group estimation of dynamic heterogeneous panels.
+  JASA 94(446).                                     -> Pooled Mean Group (PMG)
+
+Perron, P. (1989).
+  The great crash, the oil price shock, and the unit root hypothesis.
+  Econometrica 57(6).                                  -> the Perron critique
+
+Nickell, S. (1981).
+  Biases in dynamic models with fixed effects.
+  Econometrica 49(6).                                     -> Nickell bias 1/T
+
+Gallant, A.R. (1981).
+  On the bias in flexible functional forms.
+  Journal of Econometrics 15(2).                      -> the Fourier basis
+
+Hausman, J.A. (1978).
+  Specification tests in econometrics.
+  Econometrica 46(6).                            -> FE vs RE, MG vs PMG tests
+
+Tibshirani, R. (1996).
+  Regression shrinkage and selection via the lasso.
+  JRSS-B 58(1).                                                    -> LASSO
+
+Tibshirani, R. et al. (2005).
+  Sparsity and smoothness via the fused lasso.
+  JRSS-B 67(1).                                              -> fused LASSO
+
+Zou, H. (2006).
+  The adaptive lasso and its oracle properties.
+  JASA 101(476).                             -> adaptive weights, oracle prop.
+
+Breusch, T.S. & Pagan, A.R. (1980).
+  The Lagrange multiplier test.
+  Review of Economic Studies 47(1).                           -> BP-LM CSD test
+
+Bailey, N., Kapetanios, G. & Pesaran, M.H. (2016).
+  Exponent of cross-sectional dependence: estimation and inference.
+  Journal of Applied Econometrics 31(6).           -> the alpha exponent
+
+Chang, Y. (2004).
+  Bootstrap unit root tests in panels with cross-sectional dependency.
+  Journal of Econometrics 120, 263-293.                 -> sieve bootstrap
+
+McCoskey, S.K. & Kao, C. (1998).
+  A residual-based test of the null of cointegration in panel data.
+  Econometric Reviews 17(1), 57-84.                     -> the LM+ statistic
+
+Enders, W. & Lee, J. (2012).
+  The flexible Fourier form and Dickey-Fuller-type unit root tests.
+  Economics Letters 117(1).                          -> single-frequency FFF
+
+
+================================================================================
+ END OF INDEX
+================================================================================
