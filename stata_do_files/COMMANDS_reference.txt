@@ -1,0 +1,299 @@
+================================================================================
+ xt* COMMANDS REFERENCE  -  مرجع الأوامر
+ Structural Breaks in Panel Data
+ Dr Merwan Roudane  |  ideas.repec.org/f/pro1421  |  github.com/merwanroudane
+================================================================================
+
+ HOW TO READ / كيف تقرأ هذا الملف
+ --------------------------------
+ CMD      = the Stata command                        الأمر
+ DOES     = what it actually does                    ماذا يفعل
+ H0       = the null hypothesis (READ THIS FIRST!)   الفرضية الصفرية
+ FILE     = the beginner do-file that demonstrates it   ملف التدريب
+ PAPER    = the source paper                         الورقة الأصلية
+
+ *** WARNING / تحذير ***
+ The tests DISAGREE on the null. "Reject" means OPPOSITE things.
+ الاختبارات تختلف في اتجاه الفرضية - "الرفض" يعني أشياء متعاكسة.
+ ALWAYS check the H0 line before reading any p-value.
+
+ To install everything:  see INSTALL_commands.txt
+ للتثبيت: انظر INSTALL_commands.txt
+
+
+================================================================================
+ A. UNIT ROOT / STATIONARITY     اختبارات جذر الوحدة والاستقرار
+================================================================================
+
+CMD    xtpkpss
+DOES   Panel KPSS stationarity test allowing MULTIPLE structural breaks in
+       level and/or trend, each unit with its own dates.
+       اختبار استقرار البانل مع كسور هيكلية متعددة في المستوى و/أو الاتجاه.
+H0     STATIONARY  ->  reject = evidence of a UNIT ROOT
+       مستقر  ->  الرفض يعني وجود جذر وحدة
+FILE   01_xtpkpss.do
+PAPER  Carrion-i-Silvestre, del Barrio-Castro & Lopez-Bazo (2005)
+KEY    model(constant | trend | constbreak | trendbreak), maxbreaks(#)
+       reports Z(hom) and Z(het) - homogeneous vs heterogeneous long-run variance
+
+CMD    xtpqroot
+DOES   Two frontier tests in one: (1) CIPS(tau) - a unit-root test at each
+       QUANTILE, revealing asymmetric persistence; (2) tFR - allows SMOOTH
+       (fractional Fourier) AND SHARP (logistic) breaks together.
+       اختبار جذر وحدة كمّي + اختبار بكسور سلسة وحادة معًا.
+H0     UNIT ROOT  ->  reject = stationary
+       جذر وحدة  ->  الرفض يعني الاستقرار
+FILE   02_xtpqroot.do
+PAPER  Yang, Wei & Cai (2022); Corakci & Omay (2023); Nazlioglu et al. (2026)
+KEY    quantile(numlist) | fourier, model(intercept|trend|trendshift), cdtest
+
+
+================================================================================
+ B. COINTEGRATION                اختبارات التكامل المشترك
+================================================================================
+
+CMD    xtlmbreak
+DOES   LM cointegration test allowing an unknown number of breaks in level and
+       trend, at DIFFERENT dates per unit; handles endogenous regressors.
+       اختبار تكامل مشترك مع كسور متعددة بتواريخ مختلفة لكل وحدة.
+H0     COINTEGRATION  ->  reject = NO cointegration
+       تكامل مشترك  ->  الرفض يعني عدم وجود تكامل
+FILE   03_xtlmbreak.do
+PAPER  Westerlund (2006)
+KEY    model(intercept|trend|levelbreak|trendbreak), maxbreaks(#), estimator(dols|fmols)
+
+CMD    xtpcointegwe
+DOES   Cointegration with a level/regime shift; removes cross-sectional
+       dependence with COMMON FACTORS (number chosen by Bai-Ng).
+       تكامل مشترك مع كسر + إزالة الاعتماد المقطعي بالعوامل المشتركة.
+H0     NO COINTEGRATION  ->  reject = cointegration EXISTS
+       لا تكامل  ->  الرفض يعني وجود تكامل
+FILE   04_xtpcointegwe.do
+PAPER  Westerlund & Edgerton (2008)
+KEY    model(nobreak|levelshift|regimeshift), maxfactors(#)   [PD-Tau, PD-Phi]
+
+CMD    xtpcointegboot
+DOES   Bootstrap cointegration test: LM+ statistic from FM-OLS residuals, with
+       a SIEVE BOOTSTRAP for critical values under dependence.
+       اختبار تكامل بالبوتستراب - قيم حرجة صحيحة تحت الاعتماد المقطعي.
+H0     COINTEGRATION  ->  reject = NO cointegration
+FILE   05_xtpcointegboot.do
+PAPER  Westerlund & Edgerton (2007); McCoskey & Kao (1998)
+KEY    model(constant|trend), estimator(ols|yw), nboot(#)
+
+CMD    xtbreakcoint
+DOES   Cointegration test valid under BOTH structural breaks and cross-section
+       dependence (factor-based).
+       اختبار تكامل صالح مع الكسور والاعتماد المقطعي معًا.
+H0     NO COINTEGRATION  ->  reject = cointegration
+FILE   06_xtbreakcoint.do
+PAPER  Banerjee & Carrion-i-Silvestre (2015)
+KEY    model(constant|levelshift|regimeshift|trendshift), maxlag(#), nofactor
+
+CMD    xtccecoint
+DOES   CADF_P cointegration test using CCE (cross-section averages) to control
+       dependence - works under strong/semi-weak/weak dependence.
+       اختبار تكامل بمنهج CCE (متوسطات المقاطع).
+H0     NO COINTEGRATION  ->  reject = cointegration
+FILE   07_xtccecoint.do
+PAPER  Banerjee & Carrion-i-Silvestre (2017)
+KEY    model(1|2), nfactors(#), plags(#)
+
+CMD    xtcadfcoint
+DOES   THE MOST GENERAL cointegration test: breaks may hit the deterministic
+       part, the COINTEGRATING VECTOR and the FACTOR LOADINGS simultaneously.
+       الأعمّ: كسور في الحد الحتمي + متجه التكامل + تحميلات العوامل معًا.
+H0     NO COINTEGRATION  ->  reject = cointegration
+FILE   08_xtcadfcoint.do
+PAPER  Banerjee & Carrion-i-Silvestre (2025, JBES)
+KEY    model(1|3), breaks(#), brkslope, brkloadings, nfactors(#), simulate(#)
+NOTE   breaks() > 0 REQUIRES model(3)
+
+CMD    xtnonlincoint
+DOES   NONLINEAR cointegration: adjustment back to equilibrium is ASYMMETRIC
+       (faster above than below); also a Fourier smooth-break version.
+       تكامل غير خطي - التصحيح نحو التوازن غير متماثل.
+H0     NO COINTEGRATION  ->  reject = cointegration
+FILE   09_xtnonlincoint.do
+PAPER  Omay, Emirmahmutoglu & Denaux (2017)
+KEY    subcommands: ecm | fffff | all ;  lags(#), breps(#), spsm
+
+
+================================================================================
+ C. BREAK ESTIMATORS             مقدّرات الكسر
+================================================================================
+
+CMD    xtbreakmodel
+DOES   ESTIMATES the break dates and the regime coefficients. Four engines:
+         pls   = common breaks, adaptive group fused lasso   (Qian & Su 2016)
+         bfk   = sequential least squares, fast              (Baltagi-Feng-Kao)
+         sara  = nonparametric screen-and-rank, robust       (Li-Xiao-Chen)
+         gagfl = LATENT GROUPS, each with its own dates      (Okui-Wang 2021)
+       تقدير تواريخ الكسر ومعاملات كل نظام - أربعة محرّكات.
+H0     (estimation, not a test)   تقدير لا اختبار
+FILE   10_xtbreakmodel.do
+KEY    method(gagfl|pls|bfk|sara), groups(#) [gagfl], nsim(#), ngrid(#)
+NOTE   gagfl is the heaviest; lower nsim()/ngrid() while exploring
+
+CMD    xtcbc
+DOES   COEFFICIENT-BY-COEFFICIENT breaks: each coefficient gets its OWN number
+       of breaks and dates; genuinely stable coefficients stay UNBROKEN.
+       كسر لكل معامل على حدة - المعاملات الثابتة تبقى بلا كسر.
+H0     (estimation)
+FILE   11_xtcbc.do
+PAPER  Kaddoura (2025, J. Econometrics 249)
+KEY    kappa(#), ngrid(#), constant(#), csdemean [absorbs interactive effects]
+NOTE   Built for LARGE N, SMALL T. In the crime application: vector-break finds
+       2 breaks in ALL 16 coefficients; CBC finds them in only 3.
+
+CMD    xtkpybreak
+DOES   CCE estimation that stays valid when the common factors are I(1)
+       (non-stationary), PLUS multiple breaks in the SLOPES and the FACTOR
+       LOADINGS, estimated jointly by Bai-Perron.
+       تقدير CCE صالح مع عوامل I(1) + كسور في الميول وتحميلات العوامل.
+H0     (estimation) - but posts e(b)/e(V) so test/lincom work afterwards
+FILE   12_xtkpybreak.do
+PAPER  Kapetanios, Pesaran & Yamagata (2011); Baltagi, Feng & Wang (2025)
+KEY    subcommands: cce | break ;  nbreaks(#), loadings, breakplot, coefevolution
+
+CMD    xtbfkbreak
+DOES   Common break in heterogeneous panels with CCE, allowing an ENDOGENOUS
+       regressor via instruments.
+       كسر مشترك مع CCE ومتغير داخلي المنشأ عبر أداة.
+H0     (estimation)
+FILE   13_xtbfkbreak.do
+PAPER  Baltagi, Feng & Kao (2016, 2019)
+KEY    breaks(#), trim(#), nocce ;  syntax:  xtbfkbreak y (x = z), breaks(1)
+
+CMD    xtquantilebreak
+DOES   Shrinkage QUANTILE regression with multiple breaks - breaks may differ
+       ACROSS QUANTILE LEVELS (different behaviour in good vs bad times).
+       كسور عبر الكمّيات - سلوك مختلف في الأوقات الجيدة والسيئة.
+H0     (estimation)
+FILE   14_xtquantilebreak.do
+PAPER  Zhang, Zhu, Feng & He (2022)
+KEY    quantiles(numlist), lambda1(#), lambda2(numlist), kappa(#), heatmap
+
+CMD    xtdynestimb
+DOES   DYNAMIC panel estimators robust to structural breaks and cross-section
+       dependence (plain FE suffers Nickell bias here).
+       مقدّرات ديناميكية متينة ضد الكسور والاعتماد المقطعي.
+H0     (estimation)
+FILE   15_xtdynestimb.do
+KEY    subcommands: breaks | dd | csdgmm | ablasso ;  lags(#), variant(full|system)
+
+CMD    xtpvarcoint
+DOES   Panel VAR / VECM with cointegration, structural breaks and CSD; gives
+       impulse responses and variance decomposition.
+       بانل VAR/VECM مع تكامل وكسور - دوال الاستجابة وتفكيك التباين.
+H0     (system estimation)
+FILE   16_xtpvarcoint.do
+KEY    subcommands: speci | pcoint | coint | pvar | pvec | irf | fevd
+       method(JO|CAIN), lags(#), rank(#), type(Case3|const), horizon(#)
+
+
+================================================================================
+ D. BREAK DETECTION              كشف الكسور
+================================================================================
+
+CMD    xtgets
+DOES   Indicator saturation (General-to-Specific): DISCOVERS which units broke
+       and WHEN, by testing many candidate break dummies and keeping survivors.
+       يكتشف أي وحدة انكسرت ومتى - بلا تحديد مسبق.
+H0     (detection / diagnostic - not a final model)
+FILE   17_xtgets.do
+KEY    saturation: fesis | iis | csis | tis | cfesis | jsis | jiis
+       effect(twoways), t_pval(#) ;  then:  xtgets_plot, type(breaks)
+
+
+================================================================================
+ E. 2nd-GENERATION ESTIMATORS, FOURIER ARDL, CAUSALITY
+================================================================================
+
+CMD    xtfmg
+DOES   Six estimators in one command, for panels with common shocks AND breaks
+       at DIFFERENT dates:
+         fe | mg | ccemg | surmg | fsurmg | fccemg | all
+       Plus:  map    = diagnoses your panel and RECOMMENDS an estimator
+              breaks = per-unit sup-Wald break test (Andrews 1993)
+       ستة مقدّرات + تشخيص يوصي بالمقدّر المناسب.
+H0     (estimation; breaks subcommand = a test)
+FILE   18_xtfmg.do
+PAPER  Guliyev (2026); Pesaran & Smith (1995); Pesaran (2006)
+KEY    kfreq(#), heteroplot, fourierplot, coefplot, trim(#)
+NOTE   START WITH:  xtfmg map y x   -> it tells you which estimator you need
+
+CMD    xtpfardl
+DOES   Fourier-augmented panel ARDL / CS-ARDL: LONG-RUN and SHORT-RUN
+       coefficients when the equilibrium shifts SMOOTHLY and units share shocks.
+       ARDL مع فورييه - المدى الطويل والقصير مع كسر سلس.
+H0     (estimation; hausman option tests PMG vs MG poolability)
+FILE   19_xtpfardl.do
+PAPER  Ersin (2026); Sardarli & Suleymanli (2026); Chudik et al. (2016); PSS (1999)
+KEY    model(csardl|mg|pmg|dfe), crlags(#), maxk(#), k(#), fractional,
+       nofourier, nocross, lagsearch(#), hausman
+NOTE   REQUIRES xtdcce2 (Ditzen) as its engine:  ssc install xtdcce2
+
+CMD    xtpcaus
+DOES   Panel Granger CAUSALITY:
+         pfty = Fourier Toda-Yamamoto - robust to unit roots AND smooth breaks
+                (no need to pre-test for unit roots!)
+         pqc  = Panel Quantile Causality - x may cause y only in bad/good times
+       السببية في البانل - بفورييه أو عبر الكمّيات.
+H0     NO CAUSALITY  ->  reject = x Granger-causes y
+       لا سببية  ->  الرفض يعني أن x يسبب y
+FILE   20_xtpcaus.do
+PAPER  Yilanci & Gorus (2020); Emirmahmutoglu & Kose (2011); Toda & Yamamoto (1995)
+KEY    test(pfty|pqc), pmax(#), dmax(#), kmax(#), nboot(#), quantiles(numlist), ic(aic|sbc)
+NOTE   CAUSALITY HAS A DIRECTION - always run it BOTH ways:
+         xtpcaus y x, test(pfty)      and      xtpcaus x y, test(pfty)
+
+
+================================================================================
+ QUICK LOOKUP  -  أي أمر أستعمل؟
+================================================================================
+
+ Is there cross-sectional dependence?  ....... xtcd2         (run this FIRST)
+ Who broke and when? ......................... xtgets  |  xtfmg breaks
+ Unit root, sharp breaks? .................... xtpkpss
+ Unit root, gradual/unknown breaks? .......... xtpqroot, fourier
+ Unit root, asymmetric persistence? .......... xtpqroot, quantile()
+ Cointegration, H0 = cointegration? .......... xtlmbreak  |  xtpcointegboot
+ Cointegration, H0 = no cointegration? ....... xtpcointegwe  |  xtbreakcoint
+ Cointegration + loading breaks? ............. xtcadfcoint
+ Cointegration, asymmetric adjustment? ....... xtnonlincoint
+ Estimate COMMON breaks? ..................... xtbreakmodel, method(pls)
+ Estimate GROUPED breaks? .................... xtbreakmodel, method(gagfl)
+ Only SOME coefficients break? ............... xtcbc
+ I(1) factors and/or loading breaks? ......... xtkpybreak
+ Endogenous regressor + break? ............... xtbfkbreak
+ Breaks across quantiles? .................... xtquantilebreak
+ Different dates in EVERY unit? .............. xtfmg fccemg
+ Long-run ARDL with a smooth break? .......... xtpfardl
+ Dynamic model + breaks + CSD? ............... xtdynestimb
+ Panel VAR / VECM system? .................... xtpvarcoint
+ Does x predict y? ........................... xtpcaus
+
+
+================================================================================
+ THE DEFENSIBLE WORKFLOW  -  ترتيب العمل
+================================================================================
+
+ 1. xtcd2 ................. test cross-sectional dependence  (if it rejects,
+                            first-generation tools are INVALID)
+ 2. xtgets ................ detect and date the breaks
+ 3. xtpkpss / xtpqroot .... unit root WITH breaks and CSD
+ 4. (inside commands) ..... number of common factors (Bai-Ng)
+ 5. xtpcointegwe / ........ cointegration WITH breaks
+    xtbreakcoint
+ 6. xtkpybreak / xtcbc / .. estimate the break-dated coefficients
+    xtbreakmodel
+ 7. xtpfardl / PMG ........ interpret the long-run relation
+
+ Always match every estimated break date to a REAL economic event, and report
+ it with a confidence interval. A break with no story is a red flag.
+ اربط كل تاريخ كسر بحدث اقتصادي حقيقي - الكسر بلا قصة مؤشر خطر.
+
+================================================================================
+ Please cite the original methodological papers - see papers/references.txt
+================================================================================

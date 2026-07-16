@@ -39,6 +39,13 @@ Both ship with Stata; nothing to download. The panel is short (T = 20) — ideal
 | 20 | `xtpcaus` | **Panel causality**: Fourier Toda–Yamamoto (PFTY) & Panel Quantile Causality (PQC) |
 | 99 | — | Run everything in order |
 
+## Two text files to keep open
+
+| File | What it gives you |
+|---|---|
+| **`COMMANDS_reference.txt`** | **All 20 commands**: what each *does*, its **H₀** (the tests disagree!), its key options, its do-file, and its source paper. Ends with a quick-lookup table ("which command do I use?") and the workflow. |
+| **`INSTALL_commands.txt`** | Every `ssc install` line — run once before you start. |
+
 ## How to run
 1. In Stata set the working folder:
    `cd "C:\Users\HP\Documents\xtpmg\lecture\stata_do_files"`
