@@ -1,36 +1,105 @@
-# Structural Breaks in Panel Data — A Researcher's Guide
+# panelconf — Structural Breaks in Panel Data
 
-A multi-page Streamlit app that explains, from first principles to the research frontier,
-the **pre-concepts, tests, estimators and methods** for structural breaks in panel data.
-Grounded in the founding papers (Carrion-i-Silvestre et al. 2005; Westerlund 2006;
-Kapetanios–Pesaran–Yamagata 2011; Baltagi–Feng–Kao 2016/2019; Baltagi–Feng–Wang 2025;
-Banerjee–Carrion-i-Silvestre 2015/2017/2025; Okui–Wang 2021; Li–Xiao–Chen SaRa;
-Zhang et al. 2022; Corakci–Omay 2023; Nazlioglu–Karul 2017; Olayeni et al. 2021;
-Omay et al. 2017).
+A complete teaching & research toolkit for **third-generation panel econometrics**:
+cross-sectional dependence **plus** structural breaks — interactive guides, lecture notes,
+a diagram, and runnable Stata do-files.
 
 **Developed by Dr Merwan Roudane** — author of the `xt*` panel structural-break Stata suite
-(ideas.repec.org/f/pro1421 · github.com/merwanroudane).
+(100+ modules).
+[IDEAS/RePEc](https://ideas.repec.org/f/pro1421.html) · [GitHub](https://github.com/merwanroudane)
 
-## Pages
-1. **Home & Roadmap**
-2. **Preliminary Concepts** — integration, spurious regression, cointegration, LRV, CSD, factors, quantiles, Fourier, bootstrap, the Perron critique
-3. **Anatomy of a Break** — level/trend/regime; slope/vector/loading; single/multiple; known/unknown; common/grouped/heterogeneous; sharp/smooth
-4. **Unit-Root & Stationarity Tests** — panel KPSS, PANIC, Im–Lee–Tieslau, CIPS, quantile CIPS(τ), tFR
-5. **Cointegration Tests** — Westerlund, Westerlund–Edgerton, Banerjee–Carrion trilogy, nonlinear ECM
-6. **Fourier & Smooth Breaks** — FFF, FFFFF, Fourier KPSS, tFR, F-CCEMG
-7. **Break Estimators** — Bai–Perron, Qian–Su, BFK, GAGFL, SaRa, CBCL, BFW, shrinkage quantile
-8. **CSD & Factors** — CD test, CCE, KPY I(1) factors, PANIC, interactive FE, bootstrap
-9. **Break-Date Estimation & Inference** — SSR grid, dynamic programming, sup-F, ICs, super-consistency, pooling
-10. **Stata Software Map** — the 14 commands, syntax, workflow
-11. **References**
+---
 
-## Run
+## 📦 What's in this repository
+
+| Folder | What it is |
+|---|---|
+| **`/` (root)** | **Streamlit app — Structural Breaks guide** (the tests & estimators) |
+| **`panel_preconcepts_guide/`** | **Streamlit app — Pre-concepts guide** (the foundations *before* 3rd generation) |
+| **`guides/`** | Self-contained HTML guides (open in any browser, work offline) |
+| **`lecture/`** | LaTeX lecture notes (`.tex` + compiled `.pdf`) and the generations diagram |
+| **`stata_do_files/`** | 18 beginner do-files — one per command, on real data |
+
+---
+
+## 1. Streamlit app — Structural Breaks (root)
+
+The tests, estimators and methods for breaks in panels.
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Then open the local URL Streamlit prints (usually http://localhost:8501).
-The app is **light-themed** (`.streamlit/config.toml`), uses `st.latex` for equations and
-Plotly for all figures.
+**Pages:** Preliminary concepts · Anatomy of a break · Unit-root & stationarity tests ·
+Cointegration tests · Fourier & smooth breaks · Break estimators · CSD & factors ·
+Break-date estimation · Stata software map · References.
+
+## 2. Streamlit app — Pre-concepts (`panel_preconcepts_guide/`)
+
+Everything you must understand **before** third generation.
+
+```bash
+cd panel_preconcepts_guide
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+**Pages:** N and T (asymptotics, Nickell bias, interactive N–T map) · Basic static models
+(Pooled/FE/RE/Between/Hausman/MG/PMG) · Integration & cointegration · The three generations ·
+Cross-sectional dependence & its degree (α exponent) · **CSA/CCE family vs common factors** ·
+**CSD tests** (CD, LM, scaled LM, CD\*, Frees, α) · **Dummy vs Fourier** · **Regularization**
+(lasso → fused lasso → GAGFL/CBC) · References.
+
+## 3. HTML guides (`guides/`)
+
+Single self-contained files — double-click to open, no internet needed.
+
+| File | Language | Description |
+|---|---|---|
+| `panel_structural_breaks_guide_AR.html` | **العربية** | دليل شامل لأنواع التغيرات الهيكلية: مشترك/غير متجانس/مجموعات كامنة، Dummy vs Fourier vs Regularization، خريطة اختيار المنهج، جداول ومراجع |
+| `panel_3rd_generation_lecture.html` | English | Third-generation lecture: generations, tests, estimators, interactive CSD+break demo |
+
+## 4. Lecture notes (`lecture/`)
+
+- **`Third_Generation_Panel_Lecture.pdf`** — 20-page colour lecture (compiled)
+- **`Third_Generation_Panel_Lecture.tex`** — LaTeX source (compile with `latexmk -pdf`)
+- **`panel_three_generations.png`** — bilingual (عربي/English) three-generations diagram
+
+## 5. Stata do-files (`stata_do_files/`)
+
+18 beginner-friendly do-files — **one per command**, each using **real data**
+(`webuse grunfeld`), with plain-language comments and simple options.
+
+```stata
+cd stata_do_files
+do 00_START_HERE.do     // check the data loads
+do 01_xtpkpss.do        // then any file
+```
+
+Install every command first: see **`INSTALL_commands.txt`**.
+All 18 files were executed and verified on real data.
+
+---
+
+## 🧰 The commands covered (the `xt*` break-in-panels suite)
+
+**Tests / detection:** `xtpkpss` · `xtpqroot` · `xtlmbreak` · `xtpcointegwe` ·
+`xtpcointegboot` · `xtbreakcoint` · `xtccecoint` · `xtcadfcoint` · `xtnonlincoint` · `xtgets`
+
+**Estimators:** `xtbreakmodel` · `xtcbc` · `xtkpybreak` · `xtbfkbreak` ·
+`xtquantilebreak` · `xtdynestimb` · `xtpvarcoint`
+
+---
+
+## 📚 Built on
+
+Carrion-i-Silvestre, del Barrio-Castro & López-Bazo (2005) · Westerlund (2006) ·
+Westerlund & Edgerton (2007, 2008) · Kapetanios, Pesaran & Yamagata (2011) ·
+Baltagi, Feng & Kao (2016, 2019) · Baltagi, Feng & Wang (2025) ·
+Banerjee & Carrion-i-Silvestre (2015, 2017, 2025) · Okui & Wang (2021) ·
+Qian & Su (2016) · Li, Xiao & Chen (SaRa) · Kaddoura (2025) · Zhang et al. (2022) ·
+Corakci & Omay (2023) · Nazlioglu & Karul (2017) · Olayeni, Tiwari & Wohar (2021) ·
+Omay, Emirmahmutoglu & Denaux (2017).
+
+Please cite the original methodological papers when using the commands.

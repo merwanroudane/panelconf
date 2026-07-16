@@ -1,0 +1,53 @@
+*==============================================================*
+*  INSTALL ALL COMMANDS USED IN THESE DO-FILES                 *
+*  Author of the commands: Dr Merwan Roudane                   *
+*==============================================================*
+*
+*  HOW TO USE
+*  ----------
+*  Run this ONCE, with an internet connection.
+*  Either:
+*    - copy-paste all the lines below into Stata's Command window, OR
+*    - save this text as "install_all.do" and run:  do install_all.do
+*
+*  "replace" lets you re-run it later to UPDATE to the newest version.
+*==============================================================*
+
+
+*--- Unit-root / stationarity tests (files 01-02) --------------*
+ssc install xtpunitcoint, replace     // provides xtpkpss (file 01)
+ssc install xtpqroot, replace          // file 02
+
+*--- Cointegration tests (files 03-09) -------------------------*
+ssc install xtlmbreak, replace         // file 03
+ssc install xtpunitcoint, replace      // provides xtpcointegwe (04) & xtpcointegboot (05)
+ssc install xtbreakcoint, replace      // file 06
+ssc install xtccecoint, replace        // file 07
+ssc install xtcadfcoint, replace       // file 08
+ssc install xtnonlincoint, replace     // file 09
+
+*--- Break estimators (files 10-16) ----------------------------*
+ssc install xtbreakmodel, replace      // file 10
+ssc install xtcbc, replace             // file 11
+ssc install xtkpybreak, replace        // file 12
+ssc install xtbfkbreak, replace        // file 13
+ssc install xtquantilebreak, replace   // file 14
+ssc install xtdynestimb, replace       // file 15
+ssc install xtpvarcoint, replace       // file 16
+
+*--- Break detection (file 17) ---------------------------------*
+ssc install xtgets, replace            // file 17
+
+
+*==============================================================*
+*  NOTES
+*  -----
+*  - xtpkpss, xtpcointegwe and xtpcointegboot come together in ONE
+*    package: xtpunitcoint.  Installing it once gives all three
+*    (that is why it appears twice above - the second call is
+*    harmless, or you may delete the duplicate line).
+*  - If Stata says a package is "not found", check the exact package
+*    name on SSC:   ssc describe <name>
+*  - To see where a command is installed:   which <command>
+*  - To update everything you already have:  adoupdate, update
+*==============================================================*

@@ -1,0 +1,736 @@
+<title>دليل التغيرات الهيكلية في بيانات البانل</title>
+<style>
+  :root{
+    --bg:#FBF9F4; --paper:#FFFFFF; --ink:#1A2330; --muted:#5A6A7A; --faint:#8A98A6;
+    --line:#E6E4DC; --line2:#D3D0C6;
+    --common:#2563EB; --hetero:#EA580C; --grouped:#7C3AED; --multiple:#0D9488;
+    --factor:#DB2777; --fourier:#9333EA; --regular:#16A34A; --dummy:#DC2626;
+    --gold:#CA8A04; --sky:#0284C7;
+    --shadow:0 1px 2px rgba(30,35,45,.05), 0 10px 28px -14px rgba(30,35,45,.25);
+    --ar:"Segoe UI","Tahoma",Tahoma,"Arial",sans-serif;
+    --mono:ui-monospace,"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ar);
+    direction:rtl;text-align:right;line-height:1.9;font-size:16.5px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px 80px}
+
+  /* ---------- HERO ---------- */
+  .hero{background:linear-gradient(135deg,#1E3A8A 0%,#6D28D9 55%,#BE185D 100%);
+    color:#fff;border-radius:0 0 26px 26px;padding:52px 30px 44px;margin-bottom:34px;
+    text-align:center;box-shadow:0 18px 50px -22px rgba(80,30,140,.7)}
+  .hero h1{margin:0 0 10px;font-size:2.25rem;font-weight:800;line-height:1.35}
+  .hero .sub{font-size:1.12rem;opacity:.95;margin-bottom:6px}
+  .hero .en{font-size:.95rem;opacity:.8;direction:ltr;font-family:var(--mono);letter-spacing:.04em}
+  .hero .by{margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.28);
+    font-size:.92rem;opacity:.95}
+
+  /* ---------- TOC ---------- */
+  .toc{background:var(--paper);border:1px solid var(--line);border-radius:16px;
+    padding:20px 24px;box-shadow:var(--shadow);margin-bottom:34px}
+  .toc h3{margin:0 0 12px;font-size:1.05rem;color:var(--ink)}
+  .toc ol{margin:0;padding-right:22px;columns:2;column-gap:32px}
+  .toc li{margin:5px 0;font-size:.95rem}
+  .toc a{color:var(--common);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  @media(max-width:720px){.toc ol{columns:1}}
+
+  /* ---------- SECTIONS ---------- */
+  h2.sec{font-size:1.55rem;font-weight:800;margin:44px 0 6px;padding-right:16px;
+    border-right:7px solid var(--acc,#2563EB);line-height:1.5}
+  h2.sec .num{font-family:var(--mono);font-size:.85rem;color:var(--acc,#2563EB);
+    display:block;letter-spacing:.14em;margin-bottom:2px}
+  h3.sub{font-size:1.18rem;font-weight:700;margin:26px 0 8px;color:var(--ink)}
+  p{margin:.5em 0 1em}
+
+  /* ---------- CARDS ---------- */
+  .card{background:var(--paper);border:1px solid var(--line);border-right:6px solid var(--acc);
+    border-radius:14px;padding:18px 22px;margin:14px 0;box-shadow:var(--shadow)}
+  .card h4{margin:0 0 6px;font-size:1.08rem;font-weight:750;color:var(--acc)}
+  .card .lat{font-family:var(--mono);font-size:.78rem;color:var(--faint);direction:ltr;
+    display:block;margin-bottom:8px;letter-spacing:.03em}
+  .grid2{display:grid;gap:14px}
+  @media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
+  .grid3{display:grid;gap:14px}
+  @media(min-width:880px){.grid3{grid-template-columns:repeat(3,1fr)}}
+
+  /* ---------- MATH (LTR blocks) ---------- */
+  .eq{direction:ltr;text-align:center;background:#F6F8FC;border:1px solid var(--line);
+    border-radius:10px;padding:14px 16px;margin:14px 0;font-family:var(--mono);
+    font-size:1rem;overflow-x:auto;line-height:2.1;color:#16233A}
+  .eq i{font-family:Georgia,serif;font-style:italic;font-size:1.08em}
+  .eq sub{font-size:.7em;vertical-align:-.35em}
+  .eq sup{font-size:.7em}
+  .eq .op{color:var(--muted)}
+  .eq .hl{color:var(--dummy);font-weight:700}
+  .eqn{font-size:.86rem;color:var(--muted);margin:-6px 0 14px;text-align:right}
+
+  /* ---------- CALLOUTS ---------- */
+  .note{border-radius:12px;padding:14px 18px;margin:14px 0;font-size:.96rem;
+    border:1px solid var(--acc);background:var(--accbg)}
+  .note b.t{display:block;font-weight:800;color:var(--acc);margin-bottom:4px;font-size:.92rem}
+
+  /* ---------- ACCORDION ---------- */
+  details{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    margin:10px 0;overflow:hidden;box-shadow:var(--shadow)}
+  details[open]{border-color:var(--acc)}
+  summary{cursor:pointer;padding:14px 20px;font-weight:700;font-size:1.02rem;
+    list-style:none;display:flex;align-items:center;gap:10px;background:var(--accbg);
+    color:var(--acc)}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"◂";font-size:.9em;transition:transform .2s}
+  details[open] summary::before{transform:rotate(-90deg)}
+  .dbody{padding:6px 22px 18px}
+
+  /* ---------- TABLES ---------- */
+  .tw{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:12px}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:640px;background:var(--paper)}
+  th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+  thead th{background:var(--acc);color:#fff;font-weight:750;font-size:.85rem;border-bottom:none}
+  tbody tr:nth-child(even){background:#FAFAF7}
+  td.ltr,th.ltr{direction:ltr;text-align:left;font-family:var(--mono);font-size:.82rem}
+  .pkg{font-family:var(--mono);font-size:.78rem;color:var(--regular);font-weight:700;
+    background:#E8F7EE;padding:.15em .5em;border-radius:5px;display:inline-block;
+    direction:ltr;margin:2px}
+
+  /* ---------- TREE ---------- */
+  .tree{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+    padding:18px;margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+  .tree svg{display:block;margin:0 auto;min-width:720px}
+
+  /* ---------- PROS/CONS ---------- */
+  .pc{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:640px){.pc{grid-template-columns:1fr 1fr}}
+  .pros,.cons{border-radius:10px;padding:12px 16px;font-size:.93rem}
+  .pros{background:#ECFDF3;border:1px solid #16A34A}
+  .cons{background:#FEF2F2;border:1px solid #DC2626}
+  .pros b{color:#15803D} .cons b{color:#B91C1C}
+  .pros ul,.cons ul{margin:6px 0 0;padding-right:20px} .pros li,.cons li{margin:3px 0}
+
+  /* ---------- DECISION ---------- */
+  .step{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    padding:14px 18px;margin:10px 0;display:flex;gap:14px;align-items:flex-start}
+  .step .q{background:var(--acc);color:#fff;min-width:34px;height:34px;border-radius:9px;
+    display:grid;place-items:center;font-weight:800;font-size:.95rem;flex:none}
+
+  /* ---------- REFS ---------- */
+  .refs{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 24px}
+  .refs ol{padding-right:20px;margin:0}
+  .refs li{margin:8px 0;font-size:.9rem;direction:ltr;text-align:left;color:var(--muted)}
+  .refs b{color:var(--ink)}
+
+  footer{margin-top:50px;padding-top:22px;border-top:2px solid var(--line);
+    text-align:center;color:var(--muted);font-size:.9rem}
+  footer b{color:var(--ink)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.2em .6em;
+    border-radius:6px;margin:2px;direction:ltr}
+</style>
+
+<div class="hero">
+  <h1>دليل التغيرات الهيكلية في بيانات البانل</h1>
+  <div class="sub">دليل منهجي شامل لأنواع الكسور الهيكلية وطرق كشفها ونمذجتها</div>
+  <div class="en">Structural Breaks in Panel Data — A Comprehensive Methodological Guide</div>
+  <div class="by">إعداد: <b>د. مروان رودان</b> — Dr Merwan Roudane<br>
+  <span style="font-size:.85rem;opacity:.85">مؤلّف حزمة <span style="font-family:var(--mono)">xt*</span> للتغيرات الهيكلية في البانل · ideas.repec.org/f/pro1421</span></div>
+</div>
+
+<div class="wrap">
+
+<div class="toc">
+  <h3>محتويات الدليل</h3>
+  <ol>
+    <li><a href="#s1">الأساس النظري</a></li>
+    <li><a href="#s2">التصنيف الأول: طبيعة الكسر عبر الوحدات</a></li>
+    <li><a href="#s3">التصنيف الثاني: ماذا يتغير داخل النموذج؟</a></li>
+    <li><a href="#s4">التصنيف الثالث: طريقة الكشف والتمثيل</a></li>
+    <li><a href="#s5">الكسور المتعددة Multiple Breaks</a></li>
+    <li><a href="#s6">الكسر الحاد والسلس والهجين</a></li>
+    <li><a href="#s7">الكسور والجيل الثاني (CSD)</a></li>
+    <li><a href="#s8">الجيل الثالث</a></li>
+    <li><a href="#s9">خريطة اختيار المنهج</a></li>
+    <li><a href="#s10">الجدول الشامل</a></li>
+    <li><a href="#s11">المراجع</a></li>
+  </ol>
+</div>
+
+<!-- ================= 1 ================= -->
+<h2 class="sec" id="s1" style="--acc:var(--sky)"><span class="num">SECTION 01</span>الأساس النظري</h2>
+
+<h3 class="sub">ما هو التغير الهيكلي؟</h3>
+<p><b>التغير الهيكلي (Structural Break)</b> هو تغيّر في <b>معالم النموذج</b> (المعاملات) عند تاريخ أو
+تواريخ معينة، بحيث لا تعود العلاقة المقدّرة ثابتة عبر الزمن. أي أنّ النموذج الذي يصف البيانات قبل
+التاريخ <span style="font-family:var(--mono)">T<sub>b</sub></span> يختلف عن النموذج بعده.</p>
+
+<div class="eq">
+<i>y</i><sub>it</sub> = <i>α</i><sub>i</sub> + <i>β</i>(<i>t</i>)′<i>x</i><sub>it</sub> + <i>ε</i><sub>it</sub>,
+&nbsp;&nbsp;<span class="op">حيث</span>&nbsp;
+<i>β</i>(<i>t</i>) = <span class="hl">β<sub>1</sub></span> <span class="op">إذا</span> <i>t</i> &lt; <i>T</i><sub>b</sub> ,
+&nbsp; <span class="hl">β<sub>2</sub></span> <span class="op">إذا</span> <i>t</i> ≥ <i>T</i><sub>b</sub>
+</div>
+<div class="eqn">المعامل ثابت بالقطع (piecewise constant): قيمة قبل الكسر وقيمة بعده.</div>
+
+<h3 class="sub">لماذا تظهر التغيرات الهيكلية؟</h3>
+<div class="grid3">
+  <div class="card" style="--acc:var(--dummy)"><h4>صدمات اقتصادية</h4>
+  <p>الأزمة المالية 2008، أزمة النفط 1973 و1979، جائحة كوفيد-19 (2020).</p></div>
+  <div class="card" style="--acc:var(--gold)"><h4>تحولات سياسية ومؤسسية</h4>
+  <p>الانضمام إلى الاتحاد الأوروبي، اعتماد اليورو، الإصلاحات الهيكلية، التحرير المالي.</p></div>
+  <div class="card" style="--acc:var(--grouped)"><h4>تحولات تكنولوجية</h4>
+  <p>ثورة الإنترنت، الرقمنة، التحول الطاقوي — وهذه غالبًا <b>تدريجية</b> وليست فجائية.</p></div>
+</div>
+
+<h3 class="sub">أثر تجاهل الكسر</h3>
+<div class="note" style="--acc:var(--dummy);--accbg:#FEF2F2">
+<b class="t">⚠ ثلاثة أضرار خطيرة</b>
+<b>1. الانحياز (Bias):</b> تقدير معامل واحد لعلاقة تغيّرت فعليًا يعطي «متوسطًا» لا يمثّل أي فترة.<br>
+<b>2. عدم استقرار المعالم (Parameter Instability):</b> النتائج تتغير بتغير العينة، والتنبؤ يفشل.<br>
+<b>3. تحيّز الاختبارات القياسية:</b> وهذا الأخطر — انظر «نقد بيرون» أدناه.
+</div>
+
+<div class="note" style="--acc:var(--sky);--accbg:#EFF6FF">
+<b class="t">🔑 نقد بيرون (Perron Critique, 1989)</b>
+هذه <b>الفكرة المحورية</b> في كل الأدبيات: السلسلة <b>المستقرة</b> حول متوسط <b>انتقل</b> (شهد كسرًا)
+تبدو لاختبار جذر الوحدة وكأنها <b>غير مستقرة</b>. أي أنّ تجاهل الكسر <b>يحيّزك نحو قبول فرضية جذر
+الوحدة</b> ويُفقد الاختبار قوته. وهذا هو سبب وجود الجيل الثالث كله.
+</div>
+
+<!-- ================= 2 ================= -->
+<h2 class="sec" id="s2" style="--acc:var(--common)"><span class="num">SECTION 02</span>التصنيف الأول: طبيعة الكسر عبر الوحدات</h2>
+<p>هذا هو <b>التصنيف الأعمق والأهم أكاديميًا</b>: هل تتعرض كل الوحدات (الدول/الشركات) للكسر في نفس
+التاريخ أم لا؟ الجواب يحدد المنهج المسموح باستخدامه.</p>
+
+<div class="tree">
+<svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="مخطط شجري لأنواع الكسر">
+  <rect x="270" y="8" width="220" height="42" rx="9" fill="#1E3A8A"/>
+  <text x="380" y="26" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold" font-family="Tahoma">التغيرات الهيكلية في البانل</text>
+  <text x="380" y="42" text-anchor="middle" fill="#C7D2FE" font-size="10" font-family="monospace">Structural Breaks in Panel</text>
+  <line x1="380" y1="50" x2="380" y2="72" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="130" y1="72" x2="630" y2="72" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="130" y1="72" x2="130" y2="94" stroke="#2563EB" stroke-width="2"/>
+  <line x1="380" y1="72" x2="380" y2="94" stroke="#EA580C" stroke-width="2"/>
+  <line x1="630" y1="72" x2="630" y2="94" stroke="#7C3AED" stroke-width="2"/>
+
+  <rect x="35" y="94" width="190" height="56" rx="9" fill="#2563EB"/>
+  <text x="130" y="114" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold" font-family="Tahoma">كسر مشترك</text>
+  <text x="130" y="131" text-anchor="middle" fill="#DBEAFE" font-size="10" font-family="monospace">Common / Homogeneous</text>
+  <text x="130" y="144" text-anchor="middle" fill="#DBEAFE" font-size="9" font-family="monospace">Tb1 = Tb2 = ... = Tb</text>
+
+  <rect x="285" y="94" width="190" height="56" rx="9" fill="#EA580C"/>
+  <text x="380" y="114" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold" font-family="Tahoma">كسر غير متجانس</text>
+  <text x="380" y="131" text-anchor="middle" fill="#FFEDD5" font-size="10" font-family="monospace">Heterogeneous</text>
+  <text x="380" y="144" text-anchor="middle" fill="#FFEDD5" font-size="9" font-family="monospace">Tbi ≠ Tbj</text>
+
+  <rect x="535" y="94" width="190" height="56" rx="9" fill="#7C3AED"/>
+  <text x="630" y="114" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold" font-family="Tahoma">كسر بمجموعات كامنة</text>
+  <text x="630" y="131" text-anchor="middle" fill="#EDE9FE" font-size="10" font-family="monospace">Grouped / Latent</text>
+  <text x="630" y="144" text-anchor="middle" fill="#EDE9FE" font-size="9" font-family="monospace">Tbi = Tg , i ∈ Gg</text>
+
+  <line x1="130" y1="150" x2="130" y2="172" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="380" y1="150" x2="380" y2="172" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="630" y1="150" x2="630" y2="172" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="35" y="172" width="190" height="56" rx="8" fill="#EFF6FF" stroke="#2563EB"/>
+  <text x="130" y="191" text-anchor="middle" fill="#1E40AF" font-size="10" font-family="monospace">Bai (2010) · Bai-Perron</text>
+  <text x="130" y="206" text-anchor="middle" fill="#1E40AF" font-size="10" font-family="monospace">Baltagi-Feng-Kao · KPY</text>
+  <text x="130" y="221" text-anchor="middle" fill="#16A34A" font-size="10" font-family="monospace">xtbfkbreak · xtkpybreak</text>
+
+  <rect x="285" y="172" width="190" height="56" rx="8" fill="#FFF7ED" stroke="#EA580C"/>
+  <text x="380" y="191" text-anchor="middle" fill="#9A3412" font-size="10" font-family="monospace">Individual break dates</text>
+  <text x="380" y="206" text-anchor="middle" fill="#9A3412" font-size="10" font-family="monospace">Fourier CCEMG absorbs</text>
+  <text x="380" y="221" text-anchor="middle" fill="#16A34A" font-size="10" font-family="monospace">xtpqroot · xtpfardl</text>
+
+  <rect x="535" y="172" width="190" height="56" rx="8" fill="#F5F3FF" stroke="#7C3AED"/>
+  <text x="630" y="191" text-anchor="middle" fill="#5B21B6" font-size="10" font-family="monospace">Okui-Wang (2021)</text>
+  <text x="630" y="206" text-anchor="middle" fill="#5B21B6" font-size="10" font-family="monospace">Adaptive Group Fused LASSO</text>
+  <text x="630" y="221" text-anchor="middle" fill="#16A34A" font-size="10" font-family="monospace">xtbreakmodel, gagfl</text>
+</svg>
+</div>
+
+<details style="--acc:var(--common);--accbg:#EFF6FF" open>
+<summary>أ) الكسر المشترك — Common / Homogeneous Breaks</summary>
+<div class="dbody">
+<p><b>الفرضية:</b> كل الوحدات تتعرض للكسر في <b>نفس التاريخ</b>.</p>
+<div class="eq"><i>T</i><sub>b1</sub> = <i>T</i><sub>b2</sub> = … = <i>T</i><sub>bN</sub> = <i>T</i><sub>b</sub></div>
+<div class="eq">
+<span class="op">قبل:</span> <i>y</i><sub>it</sub> = <i>α</i><sub>i</sub> + <span class="hl">β<sub>1</sub></span>′<i>x</i><sub>it</sub> + <i>u</i><sub>it</sub>
+&nbsp;&nbsp;&nbsp; <span class="op">بعد:</span> <i>y</i><sub>it</sub> = <i>α</i><sub>i</sub> + <span class="hl">β<sub>2</sub></span>′<i>x</i><sub>it</sub> + <i>u</i><sub>it</sub>
+</div>
+<p><b>مثال:</b> دول الاتحاد الأوروبي والأزمة المالية 2008، أو جائحة كوفيد-19 سنة 2020 — صدمة عالمية
+تضرب الجميع في نفس اللحظة.</p>
+<div class="pc">
+<div class="pros"><b>✓ المزايا</b><ul>
+<li>أقل عدد من المعالم ⟵ <b>أعلى قوة إحصائية</b> إذا كان الافتراض صحيحًا</li>
+<li>تاريخ الكسر يُقدَّر بدقة فائقة (super-consistent) لأن كل الوحدات تساهم في تقديره</li>
+<li>تفسير اقتصادي واضح ومباشر</li></ul></div>
+<div class="cons"><b>✗ العيوب</b><ul>
+<li>افتراض قوي جدًا: نادرًا ما تستجيب كل الدول في نفس السنة</li>
+<li>إذا كان التوقيت مختلفًا فعليًا ⟵ التقدير <b>غير متسق</b></li></ul></div>
+</div>
+<p><b>أهم المناهج:</b> Bai (2010) — نموذج انتقال المتوسط؛ <b>Baltagi, Feng &amp; Kao (2016, 2019)</b> —
+كسر مشترك مع <b>معاملات غير متجانسة</b> وعوامل مشتركة (CCE)؛ <b>Kapetanios–Pesaran–Yamagata</b> +
+<b>Baltagi–Feng–Wang (2025)</b> — كسور متعددة مع عوامل I(1).</p>
+<p><span class="pkg">xtbfkbreak</span> <span class="pkg">xtkpybreak</span>
+<span class="pkg">xtbreakmodel, method(pls)</span></p>
+</div>
+</details>
+
+<details style="--acc:var(--hetero);--accbg:#FFF7ED">
+<summary>ب) الكسر غير المتجانس — Heterogeneous / Individual Breaks</summary>
+<div class="dbody">
+<p><b>الفرضية:</b> لكل وحدة تاريخ كسر <b>خاص بها</b>.</p>
+<div class="eq"><i>T</i><sub>bi</sub> ≠ <i>T</i><sub>bj</sub> &nbsp;&nbsp;<span class="op">لبعض</span> <i>i</i> ≠ <i>j</i></div>
+<p><b>لماذا مهم؟</b> لأن الصدمات <b>لا تنتقل بنفس السرعة</b> بين الدول: الإصلاحات، الحروب، التحول
+الطاقوي، كلها تصل في أوقات مختلفة.</p>
+<div class="tw"><table style="--acc:var(--hetero)">
+<thead><tr><th>الدولة</th><th>سنة الكسر</th><th>السبب</th></tr></thead>
+<tbody>
+<tr><td>ألمانيا</td><td class="ltr">2011</td><td>الخروج من الطاقة النووية (Energiewende)</td></tr>
+<tr><td>إسبانيا</td><td class="ltr">2015</td><td>إصلاح سوق الطاقة المتجددة</td></tr>
+<tr><td>اليابان</td><td class="ltr">2012</td><td>ما بعد فوكوشيما</td></tr>
+</tbody></table></div>
+<div class="pc">
+<div class="pros"><b>✓ المزايا</b><ul>
+<li>واقعي جدًا — يعكس الاختلاف الحقيقي بين الوحدات</li>
+<li>لا يفرض تزامنًا مصطنعًا</li></ul></div>
+<div class="cons"><b>✗ العيوب</b><ul>
+<li><b>انفجار عدد المعالم</b>: N تاريخ كسر + N×2 معامل</li>
+<li>يحتاج T كبيرًا لكل وحدة على حدة</li>
+<li>منهج CCE <b>لا يصلح</b> مباشرة معه (يتطلب كسرًا مشتركًا)</li></ul></div>
+</div>
+<p><b>المناهج:</b> تقدير فردي لكل وحدة (Bai 2010؛ Horváth &amp; Hušková؛ Antoch et al.)، أو —
+وهذا الحل الأنيق — <b>امتصاص الكسور المختلفة التوقيت بدوال Fourier خاصة بكل وحدة</b>
+(F-CCEMG، Guliyev 2026).</p>
+<p><span class="pkg">xtpqroot</span> <span class="pkg">xtpfardl</span></p>
+</div>
+</details>
+
+<details style="--acc:var(--grouped);--accbg:#F5F3FF">
+<summary>ج) الكسر بمجموعات كامنة — Grouped / Latent Breaks ⭐</summary>
+<div class="dbody">
+<p>هذا <b>النوع الثالث</b> وهو الحل الوسط الذكي بين المشترك والفردي.</p>
+<div class="note" style="--acc:var(--grouped);--accbg:#F5F3FF">
+<b class="t">الفكرة الجوهرية</b>
+ليست كل الدول متطابقة (Common)، وليست كل دولة منفردة (Individual) — بل توجد
+<b>مجموعات كامنة (latent groups)</b> غير معروفة مسبقًا، كل مجموعة لها تاريخ كسرها الخاص.
+والخوارزمية <b>تكتشف المجموعات وأعضاءها وتواريخ كسرها معًا</b>.
+</div>
+<div class="eq"><i>T</i><sub>bi</sub> = <i>T</i><sub>g</sub> &nbsp;&nbsp;<span class="op">إذا</span>&nbsp; <i>i</i> ∈ <i>G</i><sub>g</sub> ,&nbsp; <i>g</i> = 1, …, <i>G</i></div>
+<div class="eq"><i>y</i><sub>it</sub> = <i>α</i><sub>i</sub> + <i>x</i>′<sub>it</sub> <i>β</i><sub><i>g</i><sub>i</sub></sub>(<i>t</i>) + <i>ε</i><sub>it</sub></div>
+<p><b>مثال:</b></p>
+<div class="grid2">
+<div class="card" style="--acc:var(--common)"><h4>المجموعة 1</h4><span class="lat">USA · Canada · UK</span>
+<p>كسر سنة <b>2008</b> (الأزمة المالية العالمية).</p></div>
+<div class="card" style="--acc:var(--hetero)"><h4>المجموعة 2</h4><span class="lat">Spain · Italy · Greece</span>
+<p>كسر سنة <b>2011</b> (أزمة الديون السيادية الأوروبية).</p></div>
+</div>
+<p><b>المنهج الأهم: Okui &amp; Wang (2021)</b> — <b>Adaptive Group Fused LASSO (GAGFL)</b>.
+خوارزمية من ثلاث مراحل تتكرر حتى الاستقرار:</p>
+<div class="step" style="--acc:var(--grouped)"><div class="q">1</div><div>
+<b>تهيئة GFE:</b> تجميع الوحدات في G مجموعات بأسلوب k-means على مسارات المعاملات (Bonhomme–Manresa).</div></div>
+<div class="step" style="--acc:var(--grouped)"><div class="q">2</div><div>
+<b>AGFL داخل كل مجموعة:</b> تطبيق Fused LASSO التكيّفي لكشف كسور تلك المجموعة.</div></div>
+<div class="step" style="--acc:var(--grouped)"><div class="q">3</div><div>
+<b>إعادة التوزيع:</b> نقل كل وحدة إلى المجموعة التي يقلّل مسارها مجموع مربعات بواقيها، ثم العودة للمرحلة 2.</div></div>
+<p>عدد المجموعات <span style="font-family:var(--mono)">G</span> يُختار بمعيار BIC.</p>
+<p><span class="pkg">xtbreakmodel, method(gagfl) groups(#)</span></p>
+</div>
+</details>
+
+<!-- ================= 3 ================= -->
+<h2 class="sec" id="s3" style="--acc:var(--factor)"><span class="num">SECTION 03</span>التصنيف الثاني: ماذا يتغير داخل النموذج؟</h2>
+<p>ليس كل كسر يقع في نفس المكان من المعادلة. هذا تصنيف <b>حسب موقع الكسر</b>.</p>
+
+<div class="eq" style="background:#FDF2F8;border-color:var(--factor)">
+<i>y</i><sub>it</sub> = <span style="color:#CA8A04">D<sub>it</sub></span> + <span style="color:#2563EB">x′<sub>it</sub> β<sub>i</sub>(t)</span> + <span style="color:#DB2777">λ<sub>i</sub>(t)′ F<sub>t</sub></span> + <i>ε</i><sub>it</sub>
+</div>
+<div class="eqn">ثلاثة مواضع ممكنة للكسر: الحد الحتمي (الثابت/الاتجاه)، معاملات الميل، وتحميلات العوامل.</div>
+
+<div class="grid2">
+<div class="card" style="--acc:var(--gold)"><h4>1. كسر في الثابت — Intercept</h4>
+<span class="lat">Break in α_i / level shift</span>
+<p>ينتقل <b>المستوى</b> فقط، والميل يبقى كما هو. أبسط الأنواع وأكثرها شيوعًا في اختبارات جذر الوحدة.</p>
+<p><span class="pkg">xtpkpss model(constbreak)</span></p></div>
+
+<div class="card" style="--acc:var(--common)"><h4>2. كسر في معاملات الميل — Slope</h4>
+<span class="lat">Break in β</span>
+<p>يتغير <b>أثر المتغير المستقل</b> نفسه. مثال: أثر الإنترنت على النمو قبل وبعد التحول الرقمي.</p>
+<p><span class="pkg">xtbreakmodel</span> <span class="pkg">xtcbc</span></p></div>
+
+<div class="card" style="--acc:var(--factor)"><h4>3. كسر في تحميلات العوامل — Factor Loadings</h4>
+<span class="lat">Break in λ_i</span>
+<p>تتغير <b>درجة تأثر الوحدة بالعامل العالمي</b> نفسها. مثال: بعد الأزمة أصبحت الدول النفطية
+<b>أكثر حساسية</b> لسعر الطاقة — العامل نفسه لم يتغير، بل <b>حساسيتها له</b>.</p>
+<p><span class="pkg">xtkpybreak (loadings)</span> <span class="pkg">xtcadfcoint (brkloadings)</span></p></div>
+
+<div class="card" style="--acc:var(--multiple)"><h4>4. كسر في علاقة التكامل المشترك</h4>
+<span class="lat">Break in the cointegrating vector</span>
+<p><b>التوازن طويل الأجل نفسه ينتقل</b>. هذا أخطر الأنواع لأنه يعني أنّ العلاقة الاقتصادية الأساسية
+تغيّرت وليس مجرد انحراف مؤقت.</p>
+<p><span class="pkg">xtlmbreak</span> <span class="pkg">xtpcointegwe</span> <span class="pkg">xtbreakcoint</span> <span class="pkg">xtcadfcoint</span></p></div>
+</div>
+
+<div class="note" style="--acc:var(--factor);--accbg:#FDF2F8">
+<b class="t">🔬 الأحدث: كسر في المعاملات والتحميلات معًا</b>
+<b>Baltagi, Feng &amp; Wang (2025)</b> يقدّرون <b>مجموعتين مستقلتين من الكسور في آن واحد</b>:
+<span style="font-family:var(--mono)">K<sub>0</sub></span> في الميول و
+<span style="font-family:var(--mono)">K<sub>1</sub></span> في تحميلات العوامل، مع عوامل <b>I(1)</b>
+غير مستقرة — عبر تعميم خوارزمية Bai–Perron على البانل غير المستقر.
+<div class="eq" style="background:#fff"><i>y</i><sub>it</sub> = <i>x</i>′<sub>it</sub> <i>β</i><sub>i</sub>(<span class="hl">K<sub>0</sub></span>) + <i>γ</i><sub>i</sub>(<span class="hl">K<sub>1</sub></span>)′ <i>f</i><sub>t</sub> + <i>ε</i><sub>it</sub></div>
+</div>
+
+<!-- ================= 4 ================= -->
+<h2 class="sec" id="s4" style="--acc:var(--regular)"><span class="num">SECTION 04</span>التصنيف الثالث: طريقة الكشف والتمثيل</h2>
+<p>هنا السؤال: <b>كيف نكتب الكسر رياضيًا داخل النموذج؟</b> ثلاث عائلات كبرى.</p>
+
+<div class="tree">
+<svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ثلاث عائلات لتمثيل الكسر">
+  <rect x="280" y="6" width="200" height="36" rx="8" fill="#14532D"/>
+  <text x="380" y="29" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold" font-family="Tahoma">كيف نمثّل الكسر؟</text>
+  <line x1="380" y1="42" x2="380" y2="62" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="130" y1="62" x2="630" y2="62" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="130" y1="62" x2="130" y2="82" stroke="#DC2626" stroke-width="2"/>
+  <line x1="380" y1="62" x2="380" y2="82" stroke="#9333EA" stroke-width="2"/>
+  <line x1="630" y1="62" x2="630" y2="82" stroke="#16A34A" stroke-width="2"/>
+  <rect x="35" y="82" width="190" height="62" rx="9" fill="#DC2626"/>
+  <text x="130" y="102" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold" font-family="Tahoma">متغيرات وهمية</text>
+  <text x="130" y="118" text-anchor="middle" fill="#FEE2E2" font-size="10" font-family="monospace">Dummy Variables</text>
+  <text x="130" y="134" text-anchor="middle" fill="#FEE2E2" font-size="9" font-family="Tahoma">كسر حاد — تاريخ يُقدَّر</text>
+  <rect x="285" y="82" width="190" height="62" rx="9" fill="#9333EA"/>
+  <text x="380" y="102" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold" font-family="Tahoma">دوال فورييه</text>
+  <text x="380" y="118" text-anchor="middle" fill="#F3E8FF" font-size="10" font-family="monospace">Fourier Functions</text>
+  <text x="380" y="134" text-anchor="middle" fill="#F3E8FF" font-size="9" font-family="Tahoma">كسر سلس — بلا تاريخ</text>
+  <rect x="535" y="82" width="190" height="62" rx="9" fill="#16A34A"/>
+  <text x="630" y="102" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold" font-family="Tahoma">التنظيم/العقوبة</text>
+  <text x="630" y="118" text-anchor="middle" fill="#DCFCE7" font-size="10" font-family="monospace">Regularization</text>
+  <text x="630" y="134" text-anchor="middle" fill="#DCFCE7" font-size="9" font-family="Tahoma">كشف آلي من البيانات</text>
+  <text x="130" y="166" text-anchor="middle" fill="#7F1D1D" font-size="10" font-family="monospace">Bai-Perron · Westerlund</text>
+  <text x="380" y="166" text-anchor="middle" fill="#581C87" font-size="10" font-family="monospace">FFFFF · Fourier CCE · CS-ARDL</text>
+  <text x="630" y="166" text-anchor="middle" fill="#14532D" font-size="10" font-family="monospace">Fused LASSO · GAGFL · CBC</text>
+  <text x="130" y="182" text-anchor="middle" fill="#991B1B" font-size="9" font-family="Tahoma">تاريخ معروف/يُقدَّر</text>
+  <text x="380" y="182" text-anchor="middle" fill="#6B21A8" font-size="9" font-family="Tahoma">توقيت غير معروف</text>
+  <text x="630" y="182" text-anchor="middle" fill="#166534" font-size="9" font-family="Tahoma">بدون تحديد مسبق</text>
+</svg>
+</div>
+
+<details style="--acc:var(--dummy);--accbg:#FEF2F2" open>
+<summary>1) طريقة المتغيرات الوهمية — Dummy Variable Approach</summary>
+<div class="dbody">
+<p><b>الفكرة:</b> نفترض تغيرًا <b>مفاجئًا</b> ونضع متغيرًا وهميًا يساوي صفرًا قبل الكسر وواحدًا بعده.</p>
+<div class="eq">
+<i>D</i><sub>t</sub> = 0 &nbsp;<span class="op">إذا</span> <i>t</i> &lt; <i>T</i><sub>b</sub> ;&nbsp;&nbsp;
+<i>D</i><sub>t</sub> = 1 &nbsp;<span class="op">إذا</span> <i>t</i> ≥ <i>T</i><sub>b</sub>
+</div>
+<div class="eq"><i>y</i><sub>it</sub> = <i>α</i><sub>i</sub> + <i>β</i>′<i>x</i><sub>it</sub> + <span class="hl">γ D<sub>t</sub></span> + <i>ε</i><sub>it</sub></div>
+<p><b>الأشكال الثلاثة الكلاسيكية (تصنيف Perron):</b></p>
+<div class="tw"><table style="--acc:var(--dummy)">
+<thead><tr><th>النموذج</th><th>ماذا يتغير</th><th class="ltr">الصيغة</th></tr></thead>
+<tbody>
+<tr><td><b>A</b> — انتقال المستوى</td><td>المتوسط فقط</td><td class="ltr">D<sub>it</sub> = μ + θ·1{t &gt; T<sub>b</sub>}</td></tr>
+<tr><td><b>B</b> — كسر الاتجاه</td><td>معدل النمو فقط</td><td class="ltr">D<sub>it</sub> = μ + βt + δ(t−T<sub>b</sub>)⁺</td></tr>
+<tr><td><b>C</b> — تحول النظام</td><td>الاثنان معًا</td><td class="ltr">D<sub>it</sub> = μ + θ·1{·} + βt + δ(t−T<sub>b</sub>)⁺</td></tr>
+</tbody></table></div>
+<p><b>التطورات:</b> كسر واحد (Perron 1989؛ Zivot &amp; Andrews 1992) ⟵ كسور متعددة
+(<b>Bai &amp; Perron 1998, 2003</b>) التي تحدد <b>عدد الكسور ومواقعها وحجمها</b> عبر تدنية مجموع
+مربعات البواقي بالبرمجة الديناميكية.</p>
+<div class="eq"><i>T̂</i><sub>b</sub> = arg min<sub>&nbsp;T<sub>b</sub> ∈ [εT, (1−ε)T]</sub> &nbsp; SSR(<i>T</i><sub>b</sub>)</div>
+<div class="eqn">ε هو «التشذيب» (trimming) ويكون عادة 0.10–0.15 لإبعاد الكسر عن أطراف العينة.</div>
+<div class="pc">
+<div class="pros"><b>✓ المزايا</b><ul>
+<li>تفسير اقتصادي واضح جدًا</li><li>مناسب للصدمات الكبيرة: أزمات، حروب، قرارات سياسية</li>
+<li>تاريخ الكسر <b>فائق الاتساق</b> (super-consistent)</li></ul></div>
+<div class="cons"><b>✗ العيوب</b><ul>
+<li>يجب معرفة أو تقدير التاريخ، والتقدير يغيّر القيم الحرجة</li>
+<li>صعب جدًا مع عدد كبير من الكسور (انفجار المعالم)</li>
+<li><b>لا يناسب التحولات التدريجية</b> إطلاقًا</li></ul></div>
+</div>
+<p><span class="pkg">xtpkpss</span> <span class="pkg">xtlmbreak</span> <span class="pkg">xtpcointegwe</span> <span class="pkg">xtbreakcoint</span></p>
+</div>
+</details>
+
+<details style="--acc:var(--fourier);--accbg:#FAF5FF">
+<summary>2) طريقة دوال فورييه — Fourier Functions</summary>
+<div class="dbody">
+<p><b>الفكرة:</b> بدل أن نقول «حدث تغير مفاجئ سنة 2008»، نفترض أنّ التغير يحدث <b>تدريجيًا</b>،
+ونقرّبه بمجموع موجات جيبية.</p>
+<div class="eq">
+<i>y</i><sub>t</sub> = <i>α</i> + <i>β x</i><sub>t</sub> + <span class="hl">γ<sub>1</sub> sin(2π<i>kt</i>/<i>T</i>)</span> + <span class="hl">γ<sub>2</sub> cos(2π<i>kt</i>/<i>T</i>)</span> + <i>ε</i><sub>t</sub>
+</div>
+<div class="eqn">k = التردد (frequency). دالتا sin و cos تمثلان المسار غير الخطي للتغير.</div>
+<div class="note" style="--acc:var(--fourier);--accbg:#FAF5FF">
+<b class="t">لماذا فورييه؟ (مبرهنة Gallant 1981)</b>
+أي تغير هيكلي سلس ومحدود — <b>مهما كان معقدًا وأيًا كان عدد كسوره</b> — يمكن تقريبه بمجموع قليل من
+الموجات. لذلك <b>تردد واحد (k=1) يكفي غالبًا</b> لالتقاط عدة كسور تدريجية.
+</div>
+<p><b>الميزة الحاسمة:</b> لا تحتاج إلى معرفة ⟵ تاريخ الكسر ✗ · عدد الكسور ✗ · شكل الكسر ✗</p>
+<h3 class="sub">التطبيقات في البانل</h3>
+<div class="grid2">
+<div class="card" style="--acc:var(--fourier)"><h4>Fourier Panel Unit Root / Stationarity</h4>
+<span class="lat">Nazlioglu &amp; Karul (2017)</span>
+<p>اختبار استقرار بانل مع <b>تحولات تدريجية</b> واعتماد مقطعي، وتوزيعه طبيعي معياري.</p></div>
+<div class="card" style="--acc:var(--fourier)"><h4>FFFFF — التردد الكسري</h4>
+<span class="lat">Olayeni, Tiwari &amp; Wohar (2021)</span>
+<p><b>Fractional Frequency Flexible Fourier Form</b>: بدل ترددات صحيحة (1, 2, 3)، يبحث عن تردد
+<b>كسري</b> k ∈ [0.1, 5] يدنّي SSR ⟵ مرونة أعلى بكثير.</p></div>
+<div class="card" style="--acc:var(--fourier)"><h4>Fourier CCEMG</h4>
+<span class="lat">Guliyev (2026) — F-CCEMG</span>
+<p>الحل الأنيق <b>للكسور مختلفة التوقيت</b>: متوسطات المقاطع تُنقّي العامل المشترك، ودوال فورييه
+<b>الخاصة بكل وحدة</b> تمتص كسرها الخاص.</p>
+<div class="eq" style="font-size:.85rem"><i>y</i><sub>it</sub> = <i>β</i>′<sub>i</sub><i>x</i><sub>it</sub> + <span class="hl">c<sub>1i</sub>sin + c<sub>2i</sub>cos</span> + <i>δ</i>′<sub>i</sub><span style="color:#0284C7">z̄<sub>t</sub></span> + <i>ε</i><sub>it</sub></div></div>
+<div class="card" style="--acc:var(--fourier)"><h4>الجمع بين السلس والحاد — tFR</h4>
+<span class="lat">Corakci &amp; Omay (2023)</span>
+<p>يجمع <b>فورييه الكسري (سلس)</b> مع <b>دالة الانتقال اللوجستية LST (حاد)</b> في نفس الانحدار،
+فتقرر البيانات أيهما موجود.</p>
+<div class="eq" style="font-size:.85rem"><i>F</i>(<i>t</i>) = [1 + exp(−<i>γ</i>(<i>t</i>/<i>T</i> − <i>τ</i>))]<sup>−1</sup></div>
+<div class="eqn" style="font-size:.8rem">γ يتحكم في الحدّة (γ→∞ ⟵ درجة حادة)، τ يحدد الموقع.</div></div>
+</div>
+<p><span class="pkg">xtpqroot, fourier</span> <span class="pkg">xtpfardl</span> <span class="pkg">xtnonlincoint</span></p>
+</div>
+</details>
+
+<details style="--acc:var(--regular);--accbg:#F0FDF4">
+<summary>3) طرق التنظيم/العقوبة — Regularization ⭐ المدرسة الحديثة</summary>
+<div class="dbody">
+<div class="note" style="--acc:var(--regular);--accbg:#F0FDF4">
+<b class="t">الفكرة الجوهرية</b>
+بدل أن <b>نحدد</b> الكسر، نجعل <b>الخوارزمية تكتشفه</b>. نسمح للمعامل بالتغير في <b>كل فترة</b>،
+لكن نفرض <b>عقوبة</b> على التغير — فتُصفّر معظم التغيرات تلقائيًا، والتغيرات <b>الناجية هي الكسور</b>.
+</div>
+<div class="eq">min &nbsp;<span class="op">Loss</span> &nbsp;+&nbsp; <i>λ</i> · <span class="op">Penalty</span></div>
+<div class="eqn">λ = 0 يعطي المربعات الصغرى العادية؛ λ كبير يفرض نموذجًا أبسط. يُختار بمعيار معلومات.</div>
+
+<h3 class="sub">أ) Fused LASSO — الأساس</h3>
+<p>نعاقب <b>الفروق</b> بين المعاملات المتتالية:</p>
+<div class="eq"><i>λ</i> Σ<sub>t=2</sub><sup>T</sup> | <i>β</i><sub>t</sub> − <i>β</i><sub>t−1</sub> |</div>
+<p>إذا كان <span style="font-family:var(--mono)">β<sub>t</sub> − β<sub>t−1</sub> ≠ 0</span> نعتبرها
+<b>نقطة كسر</b>. النتيجة: الخوارزمية تعطي
+<span style="font-family:var(--mono)">T̂<sub>1</sub>, T̂<sub>2</sub>, …</span> <b>بدون تحديد مسبق لعددها</b>.</p>
+<div class="note" style="--acc:var(--regular);--accbg:#F0FDF4">
+<b class="t">لماذا يُصفّر LASSO تمامًا؟</b>
+لأن منطقة قيد LASSO (Σ|β| ≤ c) هي <b>معيّن ذو زوايا حادة على المحاور</b>، بينما منطقة Ridge دائرة
+ملساء. كنتور الملاءمة يلامس <b>زاوية</b> باحتمال موجب — والزاوية تعني معاملًا يساوي <b>صفرًا بالضبط</b>.
+الحل العددي هو <b>العتبة اللينة (soft-thresholding)</b>:
+<div class="eq" style="background:#fff"><i>β̂</i><sup>lasso</sup> = sign(<i>β̂</i><sup>OLS</sup>) · ( |<i>β̂</i><sup>OLS</sup>| − <i>λ</i> )<sup>+</sup></div>
+</div>
+
+<h3 class="sub">ب) Adaptive Group Fused LASSO — GAGFL</h3>
+<p>أهم تطبيق في البانل — <b>Okui &amp; Wang (2021)</b>. إضافتان جوهريتان:</p>
+<div class="eq">
+min &nbsp;(1/<i>N</i>) Σ<sub>i,t</sub> (<i>y</i><sub>it</sub> − <i>x</i>′<sub>it</sub><i>β</i><sub>t</sub>)² &nbsp;+&nbsp;
+<i>λ</i> Σ<sub>t=2</sub><sup>T</sup> <span class="hl">w<sub>t</sub></span> ‖ <i>β</i><sub>t</sub> − <i>β</i><sub>t−1</sub> ‖
+</div>
+<div class="eq"><span class="hl">w<sub>t</sub></span> = ‖ <i>β̇</i><sub>t</sub> − <i>β̇</i><sub>t−1</sub> ‖<sup>−κ</sup> &nbsp;&nbsp;<span class="op">(κ ≈ 2)</span></div>
+<div class="grid2">
+<div class="card" style="--acc:var(--regular)"><h4>Group (المجموعة)</h4>
+<p>نعاقب <b>معيار المتجه</b> ‖·‖ وليس القيمة المطلقة ⟵ كل المعاملات K تنكسر <b>معًا</b> (كسر متجهي).</p></div>
+<div class="card" style="--acc:var(--regular)"><h4>Adaptive (التكيّفي)</h4>
+<p>أوزان عكسية من تقدير أولي: القفزات <b>الحقيقية الكبيرة</b> تُعاقب <b>قليلًا</b>، والضجيج يُعاقب
+<b>كثيرًا</b>. هذا يمنح <b>خاصية الأوراكل (oracle property)</b>: يجد الكسور الحقيقية وكأنها كانت معلومة.</p></div>
+</div>
+
+<h3 class="sub">ج) Coefficient-by-Coefficient — CBC ⭐</h3>
+<p><b>الفكرة الأكثر مرونة (Kaddoura 2025):</b> كل معامل له كسره الخاص!</p>
+<div class="eq">
+<i>L</i><sub>λ</sub> = (1/<i>N</i>) Σ<sub>i,t</sub> (<i>ỹ</i><sub>it</sub> − <i>x̄</i>′<sub>it</sub><i>β</i>)² + <i>λ</i> Σ<sub>t</sub> Σ<sub><span class="hl">k</span></sub> <i>w</i><sub>k,t</sub> | <i>β</i><sub><span class="hl">k</span>,t</sub> − <i>β</i><sub><span class="hl">k</span>,t−1</sub> |
+</div>
+<div class="eqn">لاحظ المجموع على k: العقوبة تُطبَّق <b>على كل معامل على حدة</b> — لذلك لكل معامل عدد كسور m<sub>k</sub> وتواريخ خاصة به.</div>
+<p><b>مثال:</b> β<sub>internet</sub> ينكسر سنة <b>2010</b> ، بينما β<sub>education</sub> ينكسر سنة
+<b>2015</b> ، ومعامل ثالث <b>لا ينكسر أبدًا</b>.</p>
+<div class="note" style="--acc:var(--regular);--accbg:#F0FDF4">
+<b class="t">📌 النتيجة التطبيقية الشهيرة</b>
+في تطبيق Kaddoura على بيانات الجريمة الأمريكية: المقدّر <b>المتجهي</b> يجد كسرين في
+<b>كل الـ16 معاملًا</b>، بينما <b>CBC</b> يجد كسورًا في <b>3 متغيرات ضبط فقط</b> — تاركًا معاملات
+الردع <b>سليمة بلا كسر</b>. الكسر المتجهي «يشطر» معاملات لم تتغير أصلًا ⟵ تضخيم التباين وإخفاء
+المعنوية.
+</div>
+<p><span class="pkg">xtcbc</span> &nbsp; والخيار <span class="pkg">csdemean</span> يمتص التأثيرات التفاعلية (CSD).</p>
+
+<h3 class="sub">د) التنظيم مع العوامل المشتركة</h3>
+<p>في الجيلين الثاني والثالث يصبح النموذج:</p>
+<div class="eq"><i>Y</i><sub>it</sub> = <i>β</i><sub>it</sub>′<i>X</i><sub>it</sub> + <span style="color:#DB2777">λ<sub>i</sub>′F<sub>t</sub></span> + <i>ε</i><sub>it</sub></div>
+<p>والكسر قد يقع في <b>المعاملات β<sub>it</sub></b> أو في <b>تحميلات العوامل λ<sub>i</sub></b> أو
+<b>كليهما</b> — وهذا ما يعالجه Baltagi–Feng–Kao و Baltagi–Feng–Wang مع CCE.</p>
+
+<h3 class="sub">هـ) كسور عبر الكمّيات — Quantile</h3>
+<p><b>Zhang, Zhu, Feng &amp; He (2022):</b> انحدار كمّي + Fused LASSO تكيّفي ⟵ كسور قد <b>تختلف
+باختلاف مستوى الكمّية</b> (سلوك مختلف في الأوقات الجيدة والسيئة).</p>
+<p><span class="pkg">xtquantilebreak</span> <span class="pkg">xtbreakmodel, method(gagfl)</span> <span class="pkg">xtbreakmodel, method(pls)</span></p>
+</div>
+</details>
+
+<!-- ================= 5 ================= -->
+<h2 class="sec" id="s5" style="--acc:var(--multiple)"><span class="num">SECTION 05</span>الكسور المتعددة — Multiple Breaks</h2>
+<p>ليس كسرًا واحدًا فقط، بل <span style="font-family:var(--mono)">T<sub>1</sub>, T<sub>2</sub>, …, T<sub>m</sub></span>.</p>
+<div class="note" style="--acc:var(--multiple);--accbg:#F0FDFA">
+<b class="t">مثال واقعي — اقتصاد دولة ناشئة</b>
+<b>1997</b> الأزمة الآسيوية &nbsp;·&nbsp; <b>2008</b> الأزمة المالية العالمية &nbsp;·&nbsp;
+<b>2020</b> جائحة كورونا. ثلاثة كسور في نفس السلسلة.
+</div>
+<div class="grid3">
+<div class="card" style="--acc:var(--multiple)"><h4>Bai–Perron</h4><span class="lat">Dynamic Programming</span>
+<p>يجد <b>التقسيم الأمثل عالميًا</b> لعدد m من الكسور في زمن O(T²) بدل البحث التوافقي. عدد الكسور
+يُختار باختبار متتابع sup-F(ℓ+1|ℓ) أو بمعيار معلومات.</p></div>
+<div class="card" style="--acc:var(--multiple)"><h4>Adaptive Fused LASSO</h4><span class="lat">Qian-Su · Okui-Wang</span>
+<p>لا يحتاج تحديد m مسبقًا — العقوبة تختار العدد تلقائيًا عبر معيار BIC على λ.</p></div>
+<div class="card" style="--acc:var(--multiple)"><h4>SaRa — الفحص والترتيب</h4><span class="lat">Li, Xiao &amp; Chen</span>
+<p><b>Screening and Ranking Algorithm</b>: يقارن تقديرات محلية <b>يسار/يمين</b> كل نقطة زمنية عند
+عدة نطاقات (bandwidths)؛ المرشحون هم القيم العظمى المحلية، ثم تُصفّى بعتبة الوسيط ويُختار العدد
+النهائي بمعيار BIC. <b>لا معلمي</b> ⟵ متين ضد الذيول الثقيلة.</p>
+<div class="eq" style="font-size:.82rem"><i>D</i>(<i>t</i>,<i>h</i>) = ‖ √<i>N</i> ( <i>β̂</i><sub>R</sub>(<i>t</i>,<i>h</i>) − <i>β̂</i><sub>L</sub>(<i>t</i>,<i>h</i>) ) ‖</div></div>
+</div>
+<p><span class="pkg">xtbreakmodel, method(bfk)</span> <span class="pkg">xtbreakmodel, method(sara)</span> <span class="pkg">xtkpybreak break, nbreaks(#)</span></p>
+
+<!-- ================= 6 ================= -->
+<h2 class="sec" id="s6" style="--acc:var(--fourier)"><span class="num">SECTION 06</span>الحاد والسلس والهجين</h2>
+<div class="grid3">
+<div class="card" style="--acc:var(--dummy)"><h4>Sharp — حاد</h4>
+<p>درجة فورية (step). يُمثَّل بمتغير وهمي. مناسب لقرار سياسي أو إغلاق مفاجئ.</p></div>
+<div class="card" style="--acc:var(--fourier)"><h4>Smooth — سلس</h4>
+<p>انتقال تدريجي: <span style="font-family:var(--mono)">Regime₁ → Transition → Regime₂</span>.
+يُمثَّل بـ Fourier أو STAR/LSTAR أو دالة انتقال لوجستية.</p></div>
+<div class="card" style="--acc:var(--grouped)"><h4>Hybrid — هجين ⭐</h4>
+<p>الجمع بين الاثنين. <b>مثال كوفيد-19:</b> إغلاق <b>مفاجئ</b> (Sharp) + تغير سلوكي <b>طويل الأمد
+تدريجي</b> (Smooth). هذا بالضبط ما يقدّره اختبار <b>tFR</b> (فورييه كسري + LST معًا).</p></div>
+</div>
+
+<!-- ================= 7 ================= -->
+<h2 class="sec" id="s7" style="--acc:var(--factor)"><span class="num">SECTION 07</span>الكسور والجيل الثاني: الاعتماد المقطعي</h2>
+<p>لماذا لا يمكن استخدام الجيل الأول؟ لأن الوحدات <b>ليست مستقلة</b>.</p>
+<div class="eq"><i>Y</i><sub>it</sub> = <i>a</i><sub>i</sub> + <i>β</i><sub>i</sub>′<i>X</i><sub>it</sub> + <span style="color:#DB2777">λ<sub>i</sub>′F<sub>t</sub></span> + <i>ε</i><sub>it</sub></div>
+<div class="eqn">F<sub>t</sub> = عوامل مشتركة غير ملاحظة (صدمات عالمية) · λ<sub>i</sub> = تحميلات خاصة بكل وحدة.</div>
+<div class="note" style="--acc:var(--dummy);--accbg:#FEF2F2">
+<b class="t">⚠ آلية الفشل</b>
+اختبارات الجيل الأول تجمّع N سلسلة <b>بافتراض الاستقلال</b>، فتقسم التباين على N وكأن لدينا N معلومة
+مستقلة. مع وجود عامل مشترك تكون المعلومات المستقلة <b>أقل بكثير</b> من N ⟵ الإحصاءة المجمّعة
+<b>مضخّمة</b> ⟵ الاختبار <b>يرفض أكثر مما ينبغي (over-rejection)</b>.
+</div>
+<h3 class="sub">طريقتان للمعالجة</h3>
+<div class="grid2">
+<div class="card" style="--acc:var(--sky)"><h4>1. متوسطات المقاطع — CCE</h4><span class="lat">Pesaran (2006)</span>
+<p><b>لا نقدّر العوامل إطلاقًا</b>: نستعمل <b>متوسطات المقاطع</b> للمتغيرات الملاحظة كوكيل عنها
+ونضيفها كمتغيرات تفسيرية. لا نحتاج معرفة <b>عدد العوامل r</b>!</p>
+<div class="eq" style="font-size:.85rem"><i>β̂</i><sub>i</sub> = (<i>X</i>′<sub>i</sub><i>M̄X</i><sub>i</sub>)<sup>−1</sup><i>X</i>′<sub>i</sub><i>M̄y</i><sub>i</sub></div>
+<p><b>النتيجة المذهلة (KPY 2011):</b> يبقى CCE صالحًا <b>حتى لو كانت العوامل I(1)</b> غير مستقرة!</p></div>
+<div class="card" style="--acc:var(--factor)"><h4>2. العوامل المشتركة — PANIC / PCA</h4><span class="lat">Bai &amp; Ng (2004)</span>
+<p><b>نقدّر العوامل صراحةً</b> بالمكونات الأساسية. لكن لا يمكن على المستويات ⟵ <b>نفاضل أولًا</b>،
+نستخرج، ثم <b>نعيد التراكم</b>:</p>
+<div class="eq" style="font-size:.85rem">Δ<i>y</i><sub>it</sub> → PCA → <i>f̂</i><sub>t</sub> = Σ<sub>s≤t</sub> Δ<i>f̂</i><sub>s</sub></div>
+<p><b>الميزة:</b> يخبرك <b>أين</b> تقع اللااستقرارية: في العامل المشترك أم في المكوّن الخاص؟</p></div>
+</div>
+
+<!-- ================= 8 ================= -->
+<h2 class="sec" id="s8" style="--acc:var(--grouped)"><span class="num">SECTION 08</span>الجيل الثالث</h2>
+<div class="note" style="--acc:var(--grouped);--accbg:#F5F3FF">
+<b class="t">🎯 التعريف في جملة واحدة</b>
+منهج الجيل الثالث = <b>إزالة العوامل المشتركة</b> (بـ CCE أو PANIC) + <b>السماح للجزء الحتمي/المعاملات
+بالانكسار</b> (بـ Dummy أو Fourier أو Fused LASSO) + <b>استعمال قيم حرجة تعرف النموذج الحتمي وعدد
+الكسور</b>. وكل ما عدا ذلك تفاصيل يركّز عليها كل مؤلف.
+</div>
+<h3 class="sub">التطور التاريخي للفكر</h3>
+<div class="step" style="--acc:var(--common)"><div class="q">1</div><div>
+<b>الجيل الأول:</b> «أعرف أنّ هناك صدمة، وأضع Dummy» — مع افتراض استقلال الوحدات.</div></div>
+<div class="step" style="--acc:var(--factor)"><div class="q">2</div><div>
+<b>الجيل الثاني:</b> «هناك عوامل مشتركة بين الدول، أستعمل CCE أو Factors» — لكن بلا كسور.</div></div>
+<div class="step" style="--acc:var(--regular)"><div class="q">3</div><div>
+<b>الجيل الثالث:</b> «لا أعرف متى ولا أين يحدث التغير — <b>أترك البيانات تكتشفه</b> بواسطة
+Regularization والتقدير الآلي لتواريخ الكسر، مع معالجة الاعتماد المقطعي في آن واحد».</div></div>
+
+<!-- ================= 9 ================= -->
+<h2 class="sec" id="s9" style="--acc:var(--gold)"><span class="num">SECTION 09</span>خريطة اختيار المنهج</h2>
+<div class="step" style="--acc:var(--sky)"><div class="q">؟</div><div>
+<b>1. هل يوجد اعتماد مقطعي؟</b> (اختبار Pesaran CD) — إذا <b>نعم</b> ⟵ الجيل الأول ممنوع تمامًا.
+<span class="pkg">xtcd2</span></div></div>
+<div class="step" style="--acc:var(--dummy)"><div class="q">؟</div><div>
+<b>2. هل تاريخ الكسر معروف؟</b> إذا <b>نعم</b> ⟵ <b>Dummy</b> مباشرة (أبسط وأوضح تفسيرًا).</div></div>
+<div class="step" style="--acc:var(--fourier)"><div class="q">؟</div><div>
+<b>3. هل الكسر حاد أم تدريجي؟</b> إذا <b>تدريجي / غير معروف الشكل والعدد</b> ⟵ <b>Fourier</b>
+(<span class="pkg">xtpqroot, fourier</span> · <span class="pkg">xtpfardl</span>).</div></div>
+<div class="step" style="--acc:var(--common)"><div class="q">؟</div><div>
+<b>4. إذا كان حادًا: هل هو مشترك؟</b> إذا <b>نعم</b> ⟵ نموذج الكسر المشترك
+(<span class="pkg">xtbfkbreak</span> · <span class="pkg">xtkpybreak</span>).</div></div>
+<div class="step" style="--acc:var(--grouped)"><div class="q">؟</div><div>
+<b>5. هل تختلف التواريخ بين الوحدات؟</b> إذا كانت <b>مجموعات</b> ⟵ <b>GAGFL</b>
+(<span class="pkg">xtbreakmodel, method(gagfl)</span>). إذا كانت <b>فردية تمامًا</b> ⟵ Fourier CCEMG.</div></div>
+<div class="step" style="--acc:var(--regular)"><div class="q">؟</div><div>
+<b>6. هل تشك أنّ بعض المعاملات فقط تنكسر؟</b> ⟵ <b>CBC</b> (<span class="pkg">xtcbc</span>).</div></div>
+<div class="step" style="--acc:var(--factor)"><div class="q">؟</div><div>
+<b>7. هل تشك في كسر تحميلات العوامل؟</b> ⟵ <span class="pkg">xtkpybreak break, loadings</span> ·
+<span class="pkg">xtcadfcoint, brkloadings</span>.</div></div>
+
+<!-- ================= 10 ================= -->
+<h2 class="sec" id="s10" style="--acc:var(--common)"><span class="num">SECTION 10</span>الجدول الشامل</h2>
+
+<h3 class="sub">أ) المقارنة بين العائلات الثلاث</h3>
+<div class="tw"><table style="--acc:var(--common)">
+<thead><tr><th>الخاصية</th><th>Dummy</th><th>Fourier</th><th>Regularization</th></tr></thead>
+<tbody>
+<tr><td><b>نوع الكسر</b></td><td>حاد</td><td>سلس</td><td>حاد أو متعدد</td></tr>
+<tr><td><b>تاريخ الكسر</b></td><td>معروف / يُقدَّر</td><td>غير مطلوب</td><td>غير مطلوب</td></tr>
+<tr><td><b>عدد الكسور</b></td><td>محدود ويُحدَّد</td><td>غير مباشر</td><td>متعدد وتلقائي</td></tr>
+<tr><td><b>التفسير</b></td><td>عالٍ جدًا</td><td>متوسط</td><td>عالٍ</td></tr>
+<tr><td><b>البيانات الكبيرة</b></td><td>ضعيف</td><td>جيد</td><td>ممتاز</td></tr>
+<tr><td><b>عدم التجانس</b></td><td>محدود</td><td>جيد</td><td>ممتاز</td></tr>
+<tr><td><b>الاعتماد المقطعي</b></td><td>لا مباشرة</td><td>ممكن</td><td>ممكن</td></tr>
+<tr><td><b>تعلّم الآلة</b></td><td>لا</td><td>جزئي</td><td>نعم</td></tr>
+</tbody></table></div>
+
+<h3 class="sub">ب) الجدول المرجعي الكامل</h3>
+<div class="tw"><table style="--acc:var(--grouped)">
+<thead><tr><th>المنهج</th><th>الافتراض</th><th>نوع الكسر</th><th class="ltr">Stata</th><th class="ltr">Reference</th></tr></thead>
+<tbody>
+<tr><td>Bai–Perron</td><td>كسر مشترك</td><td>حاد متعدد</td><td class="ltr">—</td><td class="ltr">Bai &amp; Perron (1998,2003)</td></tr>
+<tr><td>PLS / AGFL</td><td>كسر مشترك متجهي</td><td>حاد متعدد</td><td class="ltr">xtbreakmodel, pls</td><td class="ltr">Qian &amp; Su (2016)</td></tr>
+<tr><td>BFK</td><td>كسر مشترك + CCE</td><td>حاد</td><td class="ltr">xtbreakmodel, bfk / xtbfkbreak</td><td class="ltr">Baltagi, Feng &amp; Kao (2016,2019)</td></tr>
+<tr><td>SaRa</td><td>كسر مشترك، لا معلمي</td><td>حاد متعدد</td><td class="ltr">xtbreakmodel, sara</td><td class="ltr">Li, Xiao &amp; Chen</td></tr>
+<tr><td><b>GAGFL</b></td><td><b>مجموعات كامنة</b></td><td>حاد، لكل مجموعة</td><td class="ltr">xtbreakmodel, gagfl</td><td class="ltr">Okui &amp; Wang (2021)</td></tr>
+<tr><td><b>CBC / CBCL</b></td><td><b>لكل معامل كسره</b></td><td>حاد، لكل معامل</td><td class="ltr">xtcbc</td><td class="ltr">Kaddoura (2025)</td></tr>
+<tr><td>KPY + BFW</td><td>عوامل I(1) + كسور</td><td>ميول + تحميلات</td><td class="ltr">xtkpybreak</td><td class="ltr">KPY (2011); Baltagi–Feng–Wang (2025)</td></tr>
+<tr><td>Shrinkage QR</td><td>كسور عبر الكمّيات</td><td>حاد</td><td class="ltr">xtquantilebreak</td><td class="ltr">Zhang et al. (2022)</td></tr>
+<tr><td>Panel KPSS</td><td>استقرار + كسور</td><td>مستوى/اتجاه</td><td class="ltr">xtpkpss</td><td class="ltr">Carrion-i-Silvestre et al. (2005)</td></tr>
+<tr><td>Fourier KPSS</td><td>تحولات تدريجية</td><td>سلس</td><td class="ltr">—</td><td class="ltr">Nazlioglu &amp; Karul (2017)</td></tr>
+<tr><td>CIPS(τ) / tFR</td><td>كمّيات + سلس وحاد</td><td>هجين</td><td class="ltr">xtpqroot</td><td class="ltr">Yang et al. (2022); Corakci &amp; Omay (2023)</td></tr>
+<tr><td>FFFFF</td><td>تردد كسري</td><td>سلس</td><td class="ltr">xtpfardl</td><td class="ltr">Olayeni, Tiwari &amp; Wohar (2021)</td></tr>
+<tr><td>Westerlund LM</td><td>تكامل مشترك + كسور</td><td>مستوى/اتجاه</td><td class="ltr">xtlmbreak</td><td class="ltr">Westerlund (2006)</td></tr>
+<tr><td>Westerlund–Edgerton</td><td>كسر + عوامل</td><td>مستوى/نظام</td><td class="ltr">xtpcointegwe / xtpcointegboot</td><td class="ltr">W &amp; E (2007, 2008)</td></tr>
+<tr><td>Banerjee–Carrion</td><td>كسور + CSD</td><td>حتمي/متجه/تحميلات</td><td class="ltr">xtbreakcoint / xtccecoint / xtcadfcoint</td><td class="ltr">B &amp; C (2015, 2017, 2025)</td></tr>
+<tr><td>Nonlinear ECM</td><td>تصحيح غير متماثل</td><td>سلس/عتبي</td><td class="ltr">xtnonlincoint</td><td class="ltr">Omay et al. (2017)</td></tr>
+</tbody></table></div>
+
+<!-- ================= 11 ================= -->
+<h2 class="sec" id="s11" style="--acc:var(--muted)"><span class="num">SECTION 11</span>المراجع</h2>
+<div class="refs">
+<ol>
+<li><b>Bai, J. &amp; Perron, P. (1998, 2003).</b> Estimating and testing linear models with multiple structural changes. <i>Econometrica</i> 66(1); <i>JAE</i> 18(1).</li>
+<li><b>Bai, J. (2010).</b> Common breaks in means and variances for panel data. <i>Journal of Econometrics</i> 157(1).</li>
+<li><b>Bai, J. &amp; Ng, S. (2004).</b> A PANIC attack on unit roots and cointegration. <i>Econometrica</i> 72(4).</li>
+<li><b>Bai, J. &amp; Carrion-i-Silvestre, J.L. (2009).</b> Structural changes, common stochastic trends, and unit roots in panel data. <i>Review of Economic Studies</i> 76(2).</li>
+<li><b>Baltagi, B.H., Feng, Q. &amp; Kao, C. (2016, 2019).</b> Estimation of heterogeneous panels with structural breaks. <i>Journal of Econometrics</i> 191(1).</li>
+<li><b>Baltagi, B.H., Feng, Q. &amp; Wang, W. (2025).</b> Nonstationary heterogeneous panels with multiple structural changes. <i>Econometric Reviews</i>. doi:10.1080/07474938.2025.2480626</li>
+<li><b>Banerjee, A. &amp; Carrion-i-Silvestre, J.L. (2015, 2017, 2025).</b> Cointegration in panel data with structural breaks and cross-section dependence. <i>JAE; JTSA</i> 38(4); <i>JBES</i> 43(1).</li>
+<li><b>Bonhomme, S. &amp; Manresa, E. (2015).</b> Grouped patterns of heterogeneity in panel data. <i>Econometrica</i> 83(3).</li>
+<li><b>Carrion-i-Silvestre, J.L., del Barrio-Castro, T. &amp; López-Bazo, E. (2005).</b> Breaking the panels: an application to the GDP per capita. <i>Econometrics Journal</i> 8(2).</li>
+<li><b>Corakci, A. &amp; Omay, T. (2023).</b> Is there convergence in renewable energy deployment? <i>Renewable Energy</i> 205.</li>
+<li><b>Gallant, A.R. (1981).</b> On the bias in flexible functional forms. <i>Journal of Econometrics</i> 15(2).</li>
+<li><b>Guliyev, H. (2026).</b> Second-generation heterogeneous panel data model with individual and common shocks (F-CCEMG).</li>
+<li><b>Kaddoura, Y. (2025).</b> Estimating coefficient-by-coefficient breaks in panel data models. <i>Journal of Econometrics</i> 249, 106005.</li>
+<li><b>Kapetanios, G., Pesaran, M.H. &amp; Yamagata, T. (2011).</b> Panels with non-stationary multifactor error structures. <i>Journal of Econometrics</i> 160(2).</li>
+<li><b>Li, F., Xiao, Y. &amp; Chen, Z.</b> Estimation of common breaks in linear panel data models via screening and ranking algorithm (SaRa).</li>
+<li><b>Nazlioglu, S. &amp; Karul, C. (2017).</b> A panel stationarity test with gradual structural shifts. <i>Economic Modelling</i>.</li>
+<li><b>Okui, R. &amp; Wang, W. (2021).</b> Heterogeneous structural breaks in panel data models. <i>Journal of Econometrics</i> 220(2).</li>
+<li><b>Olayeni, R.O., Tiwari, A.K. &amp; Wohar, M.E. (2021).</b> Fractional frequency flexible Fourier form (FFFFF) for panel cointegration test. <i>Applied Economics Letters</i> 28(6).</li>
+<li><b>Omay, T., Emirmahmutoglu, F. &amp; Denaux, Z.S. (2017).</b> Nonlinear error correction based cointegration test in panel data. <i>Economics Letters</i> 157.</li>
+<li><b>Perron, P. (1989).</b> The great crash, the oil price shock, and the unit root hypothesis. <i>Econometrica</i> 57(6).</li>
+<li><b>Pesaran, M.H. (2006, 2007).</b> CCE estimation; a simple panel unit root test. <i>Econometrica</i> 74(4); <i>JAE</i> 22(2).</li>
+<li><b>Qian, J. &amp; Su, L. (2016).</b> Shrinkage estimation of common breaks via adaptive group fused lasso. <i>Journal of Econometrics</i> 191(1).</li>
+<li><b>Tibshirani, R. et al. (1996, 2005).</b> The lasso; sparsity and smoothness via the fused lasso. <i>JRSS-B</i> 58(1); 67(1).</li>
+<li><b>Westerlund, J. &amp; Edgerton, D.L. (2006, 2007, 2008).</b> Panel cointegration with multiple structural breaks. <i>OBES</i> 68(1), 70(5); <i>Economics Letters</i> 97(3).</li>
+<li><b>Zhang, L., Zhu, Z., Feng, X. &amp; He, Y. (2022).</b> Shrinkage quantile regression for panel data with multiple structural breaks. <i>Canadian Journal of Statistics</i> 50(3).</li>
+<li><b>Zou, H. (2006).</b> The adaptive lasso and its oracle properties. <i>JASA</i> 101(476).</li>
+</ol>
+</div>
+
+<footer>
+دليل التغيرات الهيكلية في بيانات البانل &nbsp;·&nbsp; إعداد <b>د. مروان رودان</b> — Dr Merwan Roudane<br>
+<span style="font-size:.85rem">مؤلّف حزمة <span style="font-family:var(--mono)">xt*</span> للتغيرات الهيكلية في البانل (أكثر من 100 وحدة برمجية)<br>
+ideas.repec.org/f/pro1421 &nbsp;·&nbsp; github.com/merwanroudane</span>
+</footer>
+
+</div>

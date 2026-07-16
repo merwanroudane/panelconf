@@ -1,0 +1,1096 @@
+<title>Third-Generation Panel Tests with Structural Breaks</title>
+<style>
+  /* ---------- Tokens ---------- */
+  :root{
+    --bg:#fdf3dc; --surface:#fffdf8; --surface-2:#fcefcf;
+    --ink:#3c2e17; --muted:#7d684a; --faint:#ab9568;
+    --line:#f0ddad; --line-strong:#e6c983;
+    --accent:#2f8fce; --accent-soft:#d6ecf9;
+    --break:#c26f0c; --break-soft:#fbe6bd;
+    --reject:#d33d2a; --ok:#4f9b34; --factor:#d1497c;
+    --shadow:0 1px 2px rgba(120,86,20,.08),0 10px 26px -12px rgba(150,110,30,.28);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#241a0e; --surface:#2f2415; --surface-2:#2a2012;
+      --ink:#f5e8d1; --muted:#c6ac82; --faint:#957c56;
+      --line:#3f3120; --line-strong:#54422a;
+      --accent:#58b5ea; --accent-soft:#123243;
+      --break:#f6b74b; --break-soft:#3d2d10;
+      --reject:#ec6a57; --ok:#84c765; --factor:#ec6f9d;
+      --shadow:0 1px 2px rgba(0,0,0,.45),0 14px 32px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#fdf3dc; --surface:#fffdf8; --surface-2:#fcefcf;
+    --ink:#3c2e17; --muted:#7d684a; --faint:#ab9568;
+    --line:#f0ddad; --line-strong:#e6c983;
+    --accent:#2f8fce; --accent-soft:#d6ecf9;
+    --break:#c26f0c; --break-soft:#fbe6bd; --reject:#d33d2a; --ok:#4f9b34; --factor:#d1497c;
+    --shadow:0 1px 2px rgba(120,86,20,.08),0 10px 26px -12px rgba(150,110,30,.28);
+  }
+  :root[data-theme="dark"]{
+    --bg:#241a0e; --surface:#2f2415; --surface-2:#2a2012;
+    --ink:#f5e8d1; --muted:#c6ac82; --faint:#957c56;
+    --line:#3f3120; --line-strong:#54422a;
+    --accent:#58b5ea; --accent-soft:#123243;
+    --break:#f6b74b; --break-soft:#3d2d10; --reject:#ec6a57; --ok:#84c765; --factor:#ec6f9d;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 14px 32px -14px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;font-size:17px}
+
+  ::selection{background:var(--accent-soft);color:var(--ink)}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+  .col{max-width:720px}
+  main{position:relative}
+  section{padding:clamp(40px,7vh,84px) 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+
+  /* ---------- Type ---------- */
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12;
+    text-wrap:balance;letter-spacing:-.01em}
+  h2{font-size:clamp(1.7rem,3.4vw,2.5rem);margin:0 0 .5em}
+  h3{font-size:1.25rem;margin:1.8em 0 .5em;letter-spacing:0}
+  p{margin:0 0 1.05em}
+  .lede{font-size:1.2rem;color:var(--muted);line-height:1.55}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--accent);font-weight:600;
+    display:flex;align-items:center;gap:.7em;margin-bottom:1.1em}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);opacity:.6}
+  a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+  strong{color:var(--ink);font-weight:650}
+  .mono{font-family:var(--mono)}
+  em.term{font-style:normal;font-weight:600;color:var(--ink);
+    border-bottom:1.5px dotted var(--line-strong)}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:clamp(56px,11vh,120px) 0 clamp(30px,5vh,60px);border-top:none}
+  .hero h1{font-size:clamp(2.5rem,6.4vw,4.6rem);margin:0 0 .35em;letter-spacing:-.02em}
+  .hero .kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--break);margin-bottom:1.6em;font-weight:600}
+  .hero .lede{max-width:640px}
+  .credit{margin-top:2.6em;padding:20px 24px;background:var(--surface);border:1px solid var(--line);
+    border-left:5px solid var(--break);border-radius:14px;box-shadow:var(--shadow);
+    display:flex;flex-wrap:wrap;gap:18px 30px;align-items:center;justify-content:space-between}
+  .credit-role{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--break);font-weight:700;margin-bottom:.35em;display:flex;align-items:center;gap:.5em}
+  .credit-role::before{content:"☀";font-size:1.1em;color:var(--break)}
+  .credit-name{font-family:var(--serif);font-size:1.55rem;font-weight:600;line-height:1.05;color:var(--ink)}
+  .credit-sub{font-size:.86rem;color:var(--muted);margin-top:.4em}
+  .credit-sub a{color:var(--accent)}
+  .credit-tags{display:flex;flex-wrap:wrap;gap:.4em;max-width:360px}
+  .credit-tags span{font-family:var(--mono);font-size:.7rem;color:var(--accent);
+    background:var(--accent-soft);padding:.28em .62em;border-radius:6px;white-space:nowrap}
+
+  /* ---------- Progress rail / nav ---------- */
+  .toc{position:fixed;top:0;left:0;right:0;z-index:40;background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+    transform:translateY(-100%);transition:transform .3s ease}
+  .toc.show{transform:translateY(0)}
+  @media (prefers-reduced-motion:reduce){.toc{transition:none}}
+  .toc .wrap{display:flex;align-items:center;gap:1.4em;height:52px;overflow-x:auto;
+    scrollbar-width:none}
+  .toc .wrap::-webkit-scrollbar{display:none}
+  .toc .brand{font-family:var(--serif);font-weight:600;font-size:.95rem;white-space:nowrap}
+  .toc nav{display:flex;gap:1.1em;font-family:var(--mono);font-size:.74rem;
+    text-transform:uppercase;letter-spacing:.08em}
+  .toc nav a{color:var(--muted);text-decoration:none;white-space:nowrap;padding:.3em 0}
+  .toc nav a:hover{color:var(--accent)}
+  #bar{position:fixed;top:0;left:0;height:2px;background:var(--break);z-index:41;width:0}
+
+  .themebtn{margin-left:auto;flex:none;background:var(--surface-2);border:1px solid var(--line-strong);
+    color:var(--muted);font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;
+    text-transform:uppercase;padding:.45em .8em;border-radius:6px;cursor:pointer}
+  .themebtn:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* ---------- Cards / grids ---------- */
+  .grid{display:grid;gap:18px}
+  @media(min-width:720px){.g2{grid-template-columns:1fr 1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:22px 24px;box-shadow:var(--shadow)}
+  .card h3{margin-top:0}
+
+  /* generation cards */
+  .gens{display:grid;gap:16px;counter-reset:g}
+  @media(min-width:860px){.gens{grid-template-columns:repeat(3,1fr)}}
+  .gen{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:22px 22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .gen::before{content:"G"counter(g);counter-increment:g;position:absolute;top:12px;right:16px;
+    font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.05em;
+    color:var(--faint)}
+  .gen .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:.7em}
+  .gen h3{font-size:1.05rem;margin:.1em 0 .5em}
+  .gen p{font-size:.92rem;color:var(--muted);margin-bottom:.9em}
+  .gen .assumes{font-size:.82rem;font-family:var(--mono);border-top:1px dashed var(--line-strong);
+    padding-top:.8em;color:var(--ink)}
+  .gen.cur{border-color:var(--break);box-shadow:0 0 0 1px var(--break),var(--shadow)}
+  .gen.cur .tag{color:var(--break)}
+  .stripe{height:4px;border-radius:4px;margin-bottom:16px}
+  .gen:nth-child(1) .stripe{background:linear-gradient(90deg,var(--line-strong),var(--faint))}
+  .gen:nth-child(2) .stripe{background:linear-gradient(90deg,var(--factor),var(--accent))}
+  .gen:nth-child(3) .stripe{background:linear-gradient(90deg,var(--accent),var(--break))}
+
+  /* ---------- Equations ---------- */
+  .eq{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:8px;padding:16px 20px;margin:1.3em 0;overflow-x:auto;
+    font-family:var(--mono);font-size:.96rem;line-height:1.8}
+  .eq .lbl{float:right;color:var(--faint);font-size:.78rem}
+  .eq i{font-family:var(--serif);font-style:italic;font-size:1.05em}
+  .eq sub{font-size:.72em}
+  .eq sup{font-size:.72em}
+  .note{font-size:.86rem;color:var(--muted);border-left:2px solid var(--line-strong);
+    padding-left:1em;margin:1.2em 0}
+
+  /* pills */
+  .pill{display:inline-flex;align-items:center;gap:.4em;font-family:var(--mono);
+    font-size:.72rem;letter-spacing:.03em;padding:.3em .7em;border-radius:100px;
+    border:1px solid var(--line-strong);color:var(--muted);white-space:nowrap}
+  .pill.null{border-color:var(--reject);color:var(--reject)}
+  .pill.h1{border-color:var(--ok);color:var(--ok)}
+  .pill.csd{border-color:var(--factor);color:var(--factor)}
+  .pill.brk{border-color:var(--break);color:var(--break)}
+  .pillrow{display:flex;flex-wrap:wrap;gap:.5em;margin:.2em 0 1em}
+
+  /* test table cards */
+  .test{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);overflow:hidden}
+  .test .head{padding:18px 22px 14px;border-bottom:1px solid var(--line)}
+  .test .head h3{margin:0 0 .15em;font-size:1.15rem}
+  .test .head .cite{font-family:var(--mono);font-size:.76rem;color:var(--faint)}
+  .test .body{padding:16px 22px 20px;font-size:.94rem}
+  .test .body p{margin:0 0 .8em;color:var(--muted)}
+  .test .kv{display:grid;grid-template-columns:auto 1fr;gap:.35em 1.1em;
+    font-size:.86rem;margin-top:.6em}
+  .test .kv dt{font-family:var(--mono);color:var(--faint);text-transform:uppercase;
+    letter-spacing:.06em;font-size:.72rem;padding-top:.15em}
+  .test .kv dd{margin:0;color:var(--ink)}
+
+  /* ---------- Interactive demo ---------- */
+  .demo{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:20px;margin-top:8px}
+  .demo canvas{width:100%;height:auto;display:block;border-radius:8px;background:var(--surface-2)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin-top:16px;
+    padding-top:16px;border-top:1px solid var(--line)}
+  .ctl{display:flex;align-items:center;gap:.55em;font-family:var(--mono);font-size:.8rem;
+    color:var(--muted);cursor:pointer;user-select:none}
+  .switch{--on:var(--accent);position:relative;width:38px;height:22px;border-radius:100px;
+    background:var(--line-strong);transition:background .18s;flex:none}
+  .switch.on{background:var(--on)}
+  .switch.on.brkc{--on:var(--break)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;
+    border-radius:50%;background:#fff;transition:transform .18s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .switch.on::after{transform:translateX(16px)}
+  @media (prefers-reduced-motion:reduce){.switch,.switch::after{transition:none}}
+  .slider{display:flex;align-items:center;gap:.6em;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+  input[type=range]{accent-color:var(--break);cursor:pointer}
+  .caption{font-size:.84rem;color:var(--muted);margin-top:14px;line-height:1.5}
+  .legend{display:flex;flex-wrap:wrap;gap:.4em 1.2em;font-family:var(--mono);font-size:.74rem;
+    color:var(--muted);margin-top:12px}
+  .legend span{display:inline-flex;align-items:center;gap:.45em}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+  /* workflow */
+  .flow{display:grid;gap:14px}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .step .n{font-family:var(--mono);font-weight:700;font-size:.9rem;color:#fff;background:var(--accent);
+    width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
+  .step h3{margin:0 0 .2em;font-size:1rem}
+  .step p{margin:0;font-size:.9rem;color:var(--muted)}
+
+  /* callout */
+  .callout{background:var(--break-soft);border:1px solid var(--break);border-radius:10px;
+    padding:16px 20px;margin:1.4em 0;font-size:.94rem}
+  .callout .h{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--break);font-weight:700;margin-bottom:.5em}
+
+  /* references */
+  .refs{font-size:.88rem;color:var(--muted);line-height:1.5}
+  .refs li{margin-bottom:.7em}
+  .refs b{color:var(--ink)}
+
+  /* stata code console (deliberately single-theme terminal) */
+  .code{background:#26190c;color:#efe1c9;border:1px solid #46341c;border-radius:10px;
+    padding:15px 18px;font-family:var(--mono);font-size:.82rem;line-height:1.75;
+    overflow-x:auto;margin:1.1em 0}
+  .code .cmd{color:#6fc0e6;font-weight:600}
+  .code .opt{color:#f0a83f}
+  .code .c{color:#9d8760;font-style:italic}
+  .code .p{color:#c8b48d}
+
+  /* stata-command ribbon on test cards */
+  .implbar{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-strong);
+    display:flex;align-items:center;gap:.55em;flex-wrap:wrap;font-family:var(--mono);font-size:.76rem}
+  .implbar .k{color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-size:.66rem}
+  .implbar .cmd{color:var(--break);font-weight:600;background:var(--break-soft);
+    padding:.15em .6em;border-radius:5px;white-space:nowrap}
+  .implbar .cmd.a{color:var(--accent);background:var(--accent-soft)}
+
+  /* comparison matrix */
+  .matwrap{overflow-x:auto;margin:1.4em 0;border:1px solid var(--line);border-radius:10px}
+  table.matrix{width:100%;border-collapse:collapse;font-size:.85rem;min-width:560px}
+  table.matrix th,table.matrix td{border-bottom:1px solid var(--line);padding:11px 14px;
+    text-align:left;vertical-align:top}
+  table.matrix thead th{background:var(--surface-2);font-family:var(--mono);font-size:.68rem;
+    text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;
+    position:sticky;top:0}
+  table.matrix tbody th{font-family:var(--mono);font-weight:600;color:var(--ink);font-size:.8rem;
+    background:var(--surface)}
+  table.matrix td{color:var(--muted)}
+  table.matrix tr:last-child th,table.matrix tr:last-child td{border-bottom:none}
+  table.matrix .yes{color:var(--ok);font-weight:600}
+  table.matrix .no{color:var(--faint)}
+  table.matrix .own{color:var(--break);font-weight:600}
+
+  /* break-heterogeneity mini diagrams */
+  .htrio{display:grid;gap:16px;margin:22px 0}
+  @media(min-width:760px){.htrio{grid-template-columns:repeat(3,1fr)}}
+  .hcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:16px 16px 18px;box-shadow:var(--shadow)}
+  .hcard h4{margin:0 0 2px;font-family:var(--serif);font-size:1.02rem;font-weight:600}
+  .hcard .sub{font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-bottom:10px;
+    text-transform:uppercase;letter-spacing:.04em}
+  .hcard svg{width:100%;height:auto;display:block}
+  .hcard p{font-size:.84rem;color:var(--muted);margin:.7em 0 0}
+  .hcard .impl{font-family:var(--mono);font-size:.72rem;color:var(--accent);margin-top:.6em}
+
+  footer{border-top:1px solid var(--line);padding:34px 0 60px;color:var(--faint);
+    font-size:.85rem;font-family:var(--mono)}
+
+  /* svg diagram */
+  .diagram{width:100%;height:auto;display:block;margin:1em 0;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:10px}
+  .fade-in{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .fade-in.vis{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.fade-in{opacity:1;transform:none;transition:none}}
+</style>
+
+<div id="bar"></div>
+<div class="toc" id="toc">
+  <div class="wrap">
+    <span class="brand">Roudane · Panel 3ᵍ</span>
+    <nav>
+      <a href="#gens">Generations</a>
+      <a href="#why">Why 3ᵍ</a>
+      <a href="#unitroot">Unit-root</a>
+      <a href="#coint">Cointegration</a>
+      <a href="#theory">Theory</a>
+      <a href="#estimate">Estimation</a>
+      <a href="#workflow">Workflow</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="Toggle colour theme">Theme</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <header class="hero col">
+    <div class="kicker">Lecture · Panel Data Econometrics</div>
+    <h1>Third-generation panel tests, with structural breaks</h1>
+    <p class="lede">When your panel has both <em class="term">cross-sectional dependence</em> and <em class="term">structural breaks</em>, the tests you learned first will lie to you. This is the map of the estimators built to survive both — for unit roots and for cointegration — and the theory that makes them work.</p>
+    <div class="credit">
+      <div>
+        <div class="credit-role">Presenter &amp; Developer</div>
+        <div class="credit-name">Dr Merwan Roudane</div>
+        <div class="credit-sub">Author of 100+ Stata modules incl. the <strong>xt*</strong> panel structural-break suite · <a href="https://ideas.repec.org/f/pro1421.html">IDEAS/RePEc</a> · <a href="https://github.com/merwanroudane">github.com/merwanroudane</a></div>
+      </div>
+      <div class="credit-tags">
+        <span>xtpqroot</span><span>xtpkpss</span><span>xtpcointegwe</span><span>xtpcointegboot</span><span>xtkpybreak</span><span>xtbreakmodel</span><span>xtcbc</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- GENERATIONS -->
+  <section id="gens">
+    <div class="col">
+      <div class="eyebrow">The three generations</div>
+      <h2>Each generation relaxes one more lie</h2>
+      <p>Panel unit-root and cointegration tests are usually sorted into three "generations." The sorting is not about age — it is about which convenient assumption each one is finally willing to drop. Read them as a sequence of surrenders to reality.</p>
+    </div>
+    <div class="gens" style="margin-top:26px">
+      <div class="gen">
+        <div class="stripe"></div>
+        <div class="tag">First generation</div>
+        <h3>Independent panels</h3>
+        <p>Pool cross-sections assumed independent, no breaks. Power comes purely from stacking N series.</p>
+        <div class="assumes">LLC · IPS · Breitung<br>Fisher-ADF/PP · Hadri</div>
+      </div>
+      <div class="gen">
+        <div class="stripe"></div>
+        <div class="tag">Second generation</div>
+        <h3>Dependent panels</h3>
+        <p>Units share common shocks (a factor structure). Tests defactor or augment with cross-section means — but still assume no breaks.</p>
+        <div class="assumes">CIPS/CADF · PANIC<br>Moon–Perron · Choi</div>
+      </div>
+      <div class="gen cur">
+        <div class="stripe"></div>
+        <div class="tag">Third generation</div>
+        <h3>Dependent panels + breaks</h3>
+        <p>Common factors <em>and</em> structural breaks in level/trend, with break dates estimated, not assumed. This lecture.</p>
+        <div class="assumes">Im–Lee–Tieslau · Carrion 2005<br>Bai–Carrion 2009 · Westerlund–Edgerton</div>
+      </div>
+    </div>
+    <div class="col" style="margin-top:22px">
+      <p class="note">The generations are cumulative. A 3ᵍ test does not abandon the factor machinery of 2ᵍ — it carries it and adds break-date estimation on top. If your data has factors but no breaks, a 2ᵍ test is more powerful; if it has breaks you ignore, a 2ᵍ test over-rejects or loses power badly.</p>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="col">
+      <div class="eyebrow">The two problems</div>
+      <h2>What cross-sectional dependence and a break each do to you</h2>
+      <p>The generic panel model with a common-factor error is the frame everything below sits in. Write each series as a deterministic part, a common component, and an idiosyncratic part:</p>
+    </div>
+    <div class="col">
+      <div class="eq">
+        <span class="lbl">common-factor model</span>
+        <i>y</i><sub>it</sub> = <b style="color:var(--break)">D</b><sub>it</sub> + <b style="color:var(--factor)">λ</b><sub>i</sub>′<b style="color:var(--factor)">F</b><sub>t</sub> + <i>e</i><sub>it</sub>
+      </div>
+      <p style="font-size:.92rem;color:var(--muted)">
+        <span class="mono" style="color:var(--break)">D</span><sub></sub>&nbsp;— deterministic terms, <b>where the breaks live</b> (level shifts, trend breaks at dates T<sub>B</sub>).<br>
+        <span class="mono" style="color:var(--factor)">λᵢ′Fₜ</span> — <b>r common factors</b> loaded unit-specifically: this <b>is</b> the cross-sectional dependence.<br>
+        <span class="mono"><i>e</i><sub>it</sub></span> — idiosyncratic error, unit-specific dynamics.
+      </p>
+
+      <h3>Cross-sectional dependence (CSD)</h3>
+      <p>If <span class="mono">F<sub>t</sub></span> is present and you ignore it, the "independent-panels" asymptotics collapse: the pooled statistic no longer has the tabulated distribution, standard errors are wrong, and 1ᵍ tests <strong>severely over-reject</strong> a true unit-root null. Pesaran's insight (2ᵍ) — subtract the cross-section averages — soaks up a single common factor.</p>
+
+      <h3>Structural breaks</h3>
+      <p>A break in the deterministic part <span class="mono">D<sub>it</sub></span> mimics a unit root. A stationary series around a shifted mean looks persistent to an ADF regression that assumes a constant mean — the <em class="term">Perron critique</em>, now at panel scale. Ignore the break and you <strong>lose power</strong> against stationarity; the test fails to reject a unit root that isn't there.</p>
+    </div>
+
+    <div class="col">
+      <div class="demo fade-in" role="group" aria-label="Interactive panel simulation">
+        <canvas id="cv" width="1300" height="560" aria-label="Simulated panel of series"></canvas>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--muted)"></i> N individual series</span>
+          <span><i class="swatch" style="background:var(--factor)"></i> common factor Fₜ</span>
+          <span><i class="swatch" style="background:var(--break);height:0;border-top:2px dashed var(--break);width:16px"></i> break date T<sub>B</sub></span>
+        </div>
+        <div class="controls">
+          <div class="ctl" id="csdToggle" role="switch" aria-checked="true" tabindex="0">
+            <span class="switch on" id="csdSw"></span> Cross-sectional dependence
+          </div>
+          <div class="ctl" id="brkToggle" role="switch" aria-checked="true" tabindex="0">
+            <span class="switch on brkc" id="brkSw"></span> Structural break
+          </div>
+          <label class="slider">T<sub>B</sub>
+            <input type="range" id="tb" min="20" max="80" value="50" aria-label="Break date position">
+            <span class="mono" id="tbval">0.50T</span>
+          </label>
+          <button class="themebtn" id="reseed">Re-draw sample</button>
+        </div>
+        <p class="caption" id="cap">Toggle the two problems on and off. With <b>CSD on</b>, the series move together — they share <span style="color:var(--factor)">F<sub>t</sub></span>. With the <b>break on</b>, every series jumps at <span style="color:var(--break)">T<sub>B</sub></span>: stationary noise around a shifted mean that a naïve ADF reads as a unit root.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNIT ROOT -->
+  <section id="unitroot">
+    <div class="col">
+      <div class="eyebrow">Panel unit-root tests · 3ᵍ</div>
+      <h2>Testing for a unit root when the panel breaks</h2>
+      <p>Two families. <strong>LM / stationarity-based</strong> tests put the break under the null, so the break date does not distort size (Im–Lee–Tieslau; Carrion-i-Silvestre et al.). <strong>Factor-based</strong> tests separate common and idiosyncratic components first, then test each for a unit root with breaks allowed in both (Bai–Carrion-i-Silvestre). Watch the null direction — it flips between families.</p>
+    </div>
+
+    <div class="grid" style="margin-top:24px">
+      <div class="test">
+        <div class="head">
+          <h3>Panel LM with level shifts</h3>
+          <div class="cite">Im, Lee &amp; Tieslau (2005, 2010) · "Panel LM unit-root tests with level breaks"</div>
+        </div>
+        <div class="body">
+          <p>Score (LM) principle applied to each unit's break-augmented regression, then averaged across N. The LM statistic is <strong>invariant to the size and location of the level shifts</strong> under the null, so estimated break dates don't contaminate the distribution — its Achilles heel in earlier ADF-based break tests.</p>
+          <div class="pillrow">
+            <span class="pill null">H₀: unit root</span>
+            <span class="pill brk">level breaks</span>
+          </div>
+          <dl class="kv">
+            <dt>Stat</dt><dd>Standardised bar-LM → N(0,1)</dd>
+            <dt>Breaks</dt><dd>Known or estimated level shifts, per unit</dd>
+            <dt>CSD</dt><dd>Bootstrap / handled by extensions</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>Stationarity test with multiple breaks</h3>
+          <div class="cite">Carrion-i-Silvestre, del Barrio-Castro &amp; López-Bazo (2005)</div>
+        </div>
+        <div class="body">
+          <p>A Hadri / KPSS-type <strong>stationarity</strong> test — null and alternative reversed from ADF-family tests. Allows <strong>multiple</strong> structural breaks in level and trend per unit, dates estimated by minimising SSR. Cross-sectional dependence handled through a <strong>bootstrap</strong> that preserves the contemporaneous covariance across i.</p>
+          <div class="pillrow">
+            <span class="pill h1">H₀: stationary</span>
+            <span class="pill brk">multiple breaks</span>
+            <span class="pill csd">bootstrap CSD</span>
+          </div>
+          <dl class="kv">
+            <dt>Stat</dt><dd>Panel KPSS LM, break-corrected</dd>
+            <dt>Breaks</dt><dd>Up to mᵢ per unit, level &amp; trend</dd>
+            <dt>Null</dt><dd>Reject ⇒ evidence of unit root</dd>
+          </dl>
+          <div class="implbar"><span class="k">your Stata</span><span class="cmd">xtpkpss</span><span style="color:var(--muted)">model(constbreak | trendbreak) · Z(hom), Z(het)</span></div>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>PANIC with structural breaks</h3>
+          <div class="cite">Bai &amp; Carrion-i-Silvestre (2009, RES) · "Structural changes, common stochastic trends &amp; unit roots"</div>
+        </div>
+        <div class="body">
+          <p>The 3ᵍ workhorse. Extends Bai–Ng <strong>PANIC</strong>: estimate the common factors by principal components on the break-adjusted first differences, then test the <strong>common factors</strong> and the <strong>idiosyncratic components</strong> for unit roots <em>separately</em>, with breaks permitted in both. Disentangles a common stochastic trend from unit roots that are purely idiosyncratic.</p>
+          <div class="pillrow">
+            <span class="pill null">H₀: unit root</span>
+            <span class="pill csd">r common factors</span>
+            <span class="pill brk">breaks in D &amp; F</span>
+          </div>
+          <dl class="kv">
+            <dt>Idio.</dt><dd>Pooled P̂ₑ pooled statistic</dd>
+            <dt>Factors</dt><dd>MQ tests for number of stochastic trends</dd>
+            <dt>Breaks</dt><dd>Common &amp; idiosyncratic, estimated</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>CIPS — the 2ᵍ bridge</h3>
+          <div class="cite">Pesaran (2007) · context, no breaks</div>
+        </div>
+        <div class="body">
+          <p>Not a break test — included as the reference point. Augment each ADF regression with the <strong>cross-section averages</strong> of levels and lagged differences (CADF), then average the t-stats (CIPS). Removes a single common factor without estimating it. 3ᵍ tests are, in spirit, "CIPS/PANIC + a break-date grid search."</p>
+          <div class="pillrow">
+            <span class="pill null">H₀: unit root</span>
+            <span class="pill csd">cross-section means</span>
+          </div>
+          <dl class="kv">
+            <dt>Stat</dt><dd>CIPS = average of CADF tᵢ</dd>
+            <dt>Breaks</dt><dd>None — add-on needed for 3ᵍ</dd>
+            <dt>Use</dt><dd>Baseline when no break suspected</dd>
+          </dl>
+          <div class="implbar"><span class="k">your Stata</span><span class="cmd a">xtpqroot</span><span style="color:var(--muted)">extends CIPS → quantiles + breaks</span></div>
+        </div>
+      </div>
+
+      <div class="test" style="border-color:var(--break)">
+        <div class="head">
+          <h3>Quantile CIPS &amp; Fourier breaks <span style="font-family:var(--mono);font-size:.66rem;color:var(--break);letter-spacing:.08em;vertical-align:middle">◆ YOUR METHOD</span></h3>
+          <div class="cite">xtpqroot · Yang–Wei–Cai (2022), Corakci–Omay (2023), Nazlioglu et al. (2026)</div>
+        </div>
+        <div class="body">
+          <p>Two 3ᵍ tests in one command, both under cross-sectional dependence. <strong>CIPS(τ)</strong> pushes CIPS into a <strong>quantile</strong> regression: test the unit root at each τ to reveal <em>asymmetric persistence</em> — a series can be mean-reverting in normal periods yet persistent in the tails. <strong>tFR</strong> allows <strong>smooth (fractional Fourier) and sharp (logistic STR) breaks simultaneously</strong>, with CSD handled by Chang's (2004) sieve bootstrap.</p>
+          <div class="pillrow">
+            <span class="pill null">H₀: unit root (all i)</span>
+            <span class="pill csd">CD-robust</span>
+            <span class="pill brk">smooth + sharp breaks</span>
+          </div>
+          <dl class="kv">
+            <dt>CIPS(τ)</dt><dd>Quantile persistence ρ(τ); CD(τ) test optional</dd>
+            <dt>tFR</dt><dd>Fourier k^fr + LST γ,τ; bootstrap CVs</dd>
+            <dt>CSD</dt><dd>Cross-section means (CIPS) / sieve bootstrap (tFR)</dd>
+          </dl>
+          <div class="implbar"><span class="k">your Stata</span><span class="cmd a">xtpqroot</span><span class="cmd a">xtpqroot, fourier</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COINTEGRATION -->
+  <section id="coint">
+    <div class="col">
+      <div class="eyebrow">Panel cointegration tests · 3ᵍ</div>
+      <h2>Testing for a long-run relation that itself may shift</h2>
+      <p>The cointegrating vector — the long-run equilibrium — can break too. A trade elasticity, a money-demand relation, an energy–growth link can shift level or slope at some date. 3ᵍ cointegration tests estimate that break date and remain valid under cross-sectional dependence, usually via bootstrap or a factor structure.</p>
+    </div>
+
+    <div class="grid" style="margin-top:24px">
+      <div class="test">
+        <div class="head">
+          <h3>LM panel cointegration with breaks</h3>
+          <div class="cite">Westerlund (2006) · "Testing for panel cointegration with multiple structural breaks"</div>
+        </div>
+        <div class="body">
+          <p>An <strong>LM-based</strong> test whose null is <strong>cointegration</strong>. Allows the intercept and/or slope of the cointegrating relation to shift at <strong>multiple</strong> estimated dates, possibly at different dates across units. Cross-sectional dependence accommodated by a bootstrap that resamples the cross-section vector.</p>
+          <div class="pillrow">
+            <span class="pill h1">H₀: cointegration</span>
+            <span class="pill brk">multiple breaks</span>
+            <span class="pill csd">bootstrap CSD</span>
+          </div>
+          <dl class="kv">
+            <dt>Stat</dt><dd>Panel LM (KPSS on residuals)</dd>
+            <dt>Breaks</dt><dd>Regime &amp; trend shifts, per unit</dd>
+            <dt>Reject</dt><dd>⇒ no cointegration</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>Simple LM test, dependent panels + break</h3>
+          <div class="cite">Westerlund &amp; Edgerton (2008)</div>
+        </div>
+        <div class="body">
+          <p>A tractable LM test with a <strong>single</strong> break in level and/or trend, good size in small T. Cross-sectional dependence handled by a <strong>sieve bootstrap</strong>. Popular in applied energy/growth work precisely because it is simple to run and forgiving of dependence.</p>
+          <div class="pillrow">
+            <span class="pill h1">H₀: cointegration</span>
+            <span class="pill brk">1 break, level/trend</span>
+            <span class="pill csd">sieve bootstrap</span>
+          </div>
+          <dl class="kv">
+            <dt>Models</dt><dd>No shift · level shift · regime shift</dd>
+            <dt>Breaks</dt><dd>Single estimated date</dd>
+            <dt>Small T</dt><dd>Well-sized via bootstrap</dd>
+          </dl>
+          <div class="implbar"><span class="k">your Stata</span><span class="cmd a">xtpcointegwe</span><span class="cmd a">xtpcointegboot</span><span style="color:var(--muted)">PD-Tau/PD-Phi · LM⁺</span></div>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>Factor cointegration with breaks</h3>
+          <div class="cite">Banerjee &amp; Carrion-i-Silvestre (2015, 2017)</div>
+        </div>
+        <div class="body">
+          <p>Brings the <strong>factor structure explicitly into the cointegration test</strong>: model cross-sectional dependence with common factors (PANIC-style) rather than bootstrapping it, and allow structural breaks in the deterministic component. Distinguishes whether non-stationarity of the equilibrium error is common or idiosyncratic.</p>
+          <div class="pillrow">
+            <span class="pill null">H₀: no cointegration</span>
+            <span class="pill csd">common factors</span>
+            <span class="pill brk">deterministic breaks</span>
+          </div>
+          <dl class="kv">
+            <dt>Approach</dt><dd>Defactored residual unit-root test</dd>
+            <dt>CSD</dt><dd>Modelled, not bootstrapped</dd>
+            <dt>Breaks</dt><dd>Level/trend, estimated</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>Single-equation ancestors</h3>
+          <div class="cite">Gregory &amp; Hansen (1996) · Westerlund (2007) ECM</div>
+        </div>
+        <div class="body">
+          <p><strong>Gregory–Hansen</strong> is the time-series root: ADF/Zₜ/Zₐ on residuals with a regime shift, break date = argmin of the statistic. <strong>Westerlund (2007)</strong> error-correction tests (Gₜ, Gₐ, Pₜ, Pₐ) test cointegration through the significance of the adjustment speed — 2ᵍ via bootstrap, and the natural base to bolt a break onto.</p>
+          <div class="pillrow">
+            <span class="pill null">H₀: no cointegration</span>
+            <span class="pill brk">regime shift (GH)</span>
+          </div>
+          <dl class="kv">
+            <dt>GH</dt><dd>C, C/T, C/S regime-shift models</dd>
+            <dt>ECM</dt><dd>Group-mean Gₜ,Gₐ · panel Pₜ,Pₐ</dd>
+            <dt>Role</dt><dd>Building blocks for 3ᵍ</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="callout">
+        <div class="h">Watch the null — it is not a convention</div>
+        <p style="margin:0">Westerlund (2006) and Westerlund–Edgerton test <strong>H₀ : cointegration</strong> (residual-based LM/KPSS). Gregory–Hansen, Westerlund (2007) ECM, and Banerjee–Carrion test <strong>H₀ : no cointegration</strong>. "Reject" means opposite things. Always state the null before you interpret the p-value — this is the single most common misreading in applied panels.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THEORY -->
+  <section id="theory">
+    <div class="col">
+      <div class="eyebrow">Theory &amp; derivations</div>
+      <h2>The four mechanisms that make 3ᵍ work</h2>
+      <p>Everything above rests on four moving parts. Understand these and any specific test becomes a recombination of them.</p>
+
+      <h3>1 · Defactoring — the PANIC decomposition</h3>
+      <p>Start from <span class="mono">y<sub>it</sub> = D<sub>it</sub> + λ<sub>i</sub>′F<sub>t</sub> + e<sub>it</sub></span>. You cannot run principal components on the levels — if <span class="mono">F<sub>t</sub></span> and <span class="mono">e<sub>it</sub></span> have different integration orders the estimator is inconsistent. PANIC's move is to <strong>difference first</strong>, extract factors from the stationary differences, then <strong>re-cumulate</strong>:</p>
+      <div class="eq">
+        <span class="lbl">PANIC — differenced space</span>
+        Δ<i>y</i><sub>it</sub> = Δ<i>D</i><sub>it</sub> + <b style="color:var(--factor)">λ</b><sub>i</sub>′Δ<b style="color:var(--factor)">F</b><sub>t</sub> + Δ<i>e</i><sub>it</sub>
+      </div>
+      <div class="eq">
+        <span class="lbl">re-cumulate &amp; test</span>
+        <b style="color:var(--factor)">F̂</b><sub>t</sub> = Σ<sup>t</sup> Δ<b>F̂</b><sub>s</sub> &nbsp;·&nbsp; <i>ê</i><sub>it</sub> = Σ<sup>t</sup> Δ<i>ê</i><sub>is</sub>
+      </div>
+      <p>Now test <span class="mono">F̂<sub>t</sub></span> and <span class="mono">ê<sub>it</sub></span> for unit roots <strong>separately</strong>. The idiosyncratic tests are pooled across i (they are asymptotically independent once the common factor is removed); the factors are tested with the MQ statistics for the number of common stochastic trends. Bai–Carrion adds break terms to <span class="mono">D<sub>it</sub></span> before differencing.</p>
+
+      <h3>2 · Estimating the break date</h3>
+      <p>The break date <span class="mono">T<sub>B</sub></span> is a nuisance parameter estimated by <strong>grid search</strong> — pick the date that minimises the residual sum of squares (equivalently maximises the Wald/LM statistic for a shift):</p>
+      <div class="eq">
+        <span class="lbl">break-date estimator</span>
+        T̂<sub>B</sub> = arg&nbsp;min<sub>&nbsp;T<sub>B</sub>∈[εT,(1−ε)T]</sub> &nbsp;SSR(T<sub>B</sub>)
+      </div>
+      <p><strong>Trimming</strong> ε (typically 0.10–0.15) keeps the search away from the endpoints where a "break" is not identified. For <strong>multiple</strong> breaks, the dates are found by the Bai–Perron sequential / dynamic-programming algorithm and the number of breaks by an information criterion or a sequential sup-F(ℓ+1|ℓ) test. Because <span class="mono">T̂<sub>B</sub>/T</span> converges fast (super-consistently), the downstream unit-root statistic behaves as if the break date were known.</p>
+
+      <h3>3 · Why LM tests put the break under the null</h3>
+      <p>The Perron problem is that under the alternative (stationarity) an unmodelled break biases you <em>toward</em> the unit-root null. ADF-with-break tests specify the break only under the alternative, so critical values depend on the (estimated) break location — messy and size-distorting. <strong>LM / score tests specify the break under the null too</strong>, so the statistic is <strong>invariant to the break magnitude</strong> and its distribution does not depend on where the break is. That invariance is exactly why Im–Lee–Tieslau and Carrion et al. are trustworthy at panel scale.</p>
+
+      <h3>4 · Pooling, bias-correction &amp; the limit</h3>
+      <p>Individual break-and-factor-adjusted statistics are averaged across N. Each has a non-zero mean and finite variance under the null (functionals of Brownian motion / Brownian bridges shifted by the deterministic terms). Standardise:</p>
+      <div class="eq">
+        <span class="lbl">standardised panel statistic</span>
+        Z = &radic;N · ( N<sup>−1</sup>Σ<sub>i</sub> S<sub>i</sub> − <i>μ</i> ) / <i>σ</i> &nbsp;→<sub>d</sub>&nbsp; N(0,1)
+      </div>
+      <p>The moments <span class="mono">μ, σ²</span> are the mean and variance of the individual limiting distribution — <strong>and they depend on the deterministic specification</strong> (constant vs trend, number of breaks). This is why every 3ᵍ paper tabulates a different <span class="mono">(μ, σ²)</span> for each model and each break count. Cross-sectional dependence, if not fully removed by factors, is handled by <strong>bootstrapping</strong> the cross-section vector so the resampled data keep the contemporaneous covariance while imposing the null.</p>
+
+      <div class="callout">
+        <div class="h">The one sentence to remember</div>
+        <p style="margin:0">A third-generation test = <strong>remove the common factors</strong> (defactor or subtract cross-section means) <strong>+ estimate the break dates by SSR grid search</strong> <strong>+ test the cleaned series with critical values that know the deterministic model</strong>. Everything else is which piece each author emphasises.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESTIMATION -->
+  <section id="estimate">
+    <div class="col">
+      <div class="eyebrow">Estimating the breaks · your Stata toolkit</div>
+      <h2>From testing the break to estimating it</h2>
+      <p>The tests above ask <em>whether</em> a series is I(1) or a relation cointegrates, allowing a break. The next question is <strong>estimation</strong>: recover the break <em>dates</em> and the regime-specific coefficients <span class="mono">β(t)</span> in a panel regression. This is a distinct, newer strand — the post-2016 panel structural-break estimators — and two of them are your own commands, <strong>xtbreakmodel</strong> and <strong>xtcbc</strong>.</p>
+      <div class="callout" style="background:var(--accent-soft);border-color:var(--accent)">
+        <div class="h" style="color:var(--accent)">Two different questions — don't conflate them</div>
+        <p style="margin:0"><strong>Integration/cointegration with breaks</strong> (previous sections) asks whether the series has a unit root or a stable long-run relation. <strong>Coefficient-break estimation</strong> (here) assumes the regression is well-specified and asks <em>when the slopes shift and to what</em>. In an applied paper you do the first to justify the model, then the second to estimate it.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3>The axis that separates them: how much break heterogeneity?</h3>
+      <p>Every panel-break estimator makes an assumption about <strong>who breaks, and whether together</strong>. That single assumption is what distinguishes the methods — read the three regimes left to right as progressively more heterogeneity allowed.</p>
+    </div>
+
+    <div class="htrio">
+      <div class="hcard">
+        <h4>Common vector breaks</h4>
+        <div class="sub">all units · all coefs · same dates</div>
+        <svg viewBox="0 0 240 120" role="img" aria-label="Two coefficient paths stepping at the same two dates">
+          <line x1="20" y1="100" x2="230" y2="100" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="20" y1="12" x2="20" y2="100" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="100" y1="12" x2="100" y2="105" stroke="var(--break)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <line x1="165" y1="12" x2="165" y2="105" stroke="var(--break)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <polyline points="20,78 100,78 100,52 165,52 165,34 230,34" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <polyline points="20,90 100,90 100,70 165,70 165,60 230,60" fill="none" stroke="var(--factor)" stroke-width="2.5"/>
+        </svg>
+        <p>Both coefficients jump at the <em>same</em> two dates. Fewest parameters, most power — if the assumption holds.</p>
+        <div class="impl">xtbreakmodel: pls · bfk · sara</div>
+      </div>
+
+      <div class="hcard">
+        <h4>Coefficient-by-coefficient</h4>
+        <div class="sub">each coef · its own dates</div>
+        <svg viewBox="0 0 240 120" role="img" aria-label="Two coefficient paths breaking at different, independent dates">
+          <line x1="20" y1="100" x2="230" y2="100" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="20" y1="12" x2="20" y2="100" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="80" y1="12" x2="80" y2="105" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7"/>
+          <line x1="185" y1="12" x2="185" y2="105" stroke="var(--factor)" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7"/>
+          <polyline points="20,80 80,80 80,40 230,40" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <polyline points="20,90 185,90 185,66 230,66" fill="none" stroke="var(--factor)" stroke-width="2.5"/>
+        </svg>
+        <p>One coefficient breaks early, the other late — or not at all. Avoids splitting regimes for coefficients that never moved.</p>
+        <div class="impl own">xtcbc — CBCL (Kaddoura 2025)</div>
+      </div>
+
+      <div class="hcard">
+        <h4>Grouped heterogeneous</h4>
+        <div class="sub">latent groups · group-specific dates</div>
+        <svg viewBox="0 0 240 120" role="img" aria-label="Two groups of units each with their own break date">
+          <line x1="20" y1="100" x2="230" y2="100" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="20" y1="12" x2="20" y2="100" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="90" y1="12" x2="90" y2="105" stroke="var(--break)" stroke-width="1.2" stroke-dasharray="4 4" opacity=".55"/>
+          <line x1="170" y1="12" x2="170" y2="105" stroke="var(--break)" stroke-width="1.2" stroke-dasharray="4 4" opacity=".55"/>
+          <polyline points="20,74 90,74 90,44 230,44" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <polyline points="20,80 90,80 90,50 230,50" fill="none" stroke="var(--accent)" stroke-width="1.4" opacity=".5"/>
+          <polyline points="20,92 170,92 170,66 230,66" fill="none" stroke="var(--factor)" stroke-width="2.5"/>
+          <polyline points="20,86 170,86 170,60 230,60" fill="none" stroke="var(--factor)" stroke-width="1.4" opacity=".5"/>
+        </svg>
+        <p>Units cluster into latent groups; each group has its own break dates and coefficients — membership estimated, not assumed.</p>
+        <div class="impl">xtbreakmodel: gagfl</div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:8px">
+      <div class="test">
+        <div class="head">
+          <h3>xtbreakmodel</h3>
+          <div class="cite">Roudane (2026) · four estimators, vector &amp; grouped breaks</div>
+        </div>
+        <div class="body">
+          <p>Estimates <span class="mono">y<sub>it</sub> = x′<sub>it</sub>β(t) + α<sub>i</sub> + ε<sub>it</sub></span> with a piecewise-constant <strong>vector</strong> coefficient (all K break together), across four detection engines — spanning common-break and grouped-heterogeneous designs.</p>
+          <dl class="kv">
+            <dt>gagfl</dt><dd>Grouped Adaptive Group Fused Lasso — latent groups + group-specific breaks (Okui &amp; Wang 2021)</dd>
+            <dt>pls</dt><dd>AGFL common vector breaks (Qian &amp; Su 2016)</dd>
+            <dt>bfk</dt><dd>Sequential least-squares, common breaks (Baltagi, Feng &amp; Kao 2016)</dd>
+            <dt>sara</dt><dd>Nonparametric screen-and-rank, robust to heavy tails (Li, Xiao &amp; Chen 2025)</dd>
+          </dl>
+          <div class="pillrow" style="margin-top:1em">
+            <span class="pill brk">vector break</span>
+            <span class="pill csd">latent groups (gagfl)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="test">
+        <div class="head">
+          <h3>xtcbc</h3>
+          <div class="cite">Roudane (2026) · CBCL estimator of Kaddoura (2025, JoE 249:106005)</div>
+        </div>
+        <div class="body">
+          <p>Relaxes the vector-break assumption: each coefficient <span class="mono">β<sub>k,t</sub></span> gets its <em>own</em> number of breaks <span class="mono">m<sub>k</sub></span> and dates, chosen by an adaptive fused L1 penalty with a BIC-type IC. Built for <strong>large N, fixed/small T</strong>.</p>
+          <p>The <span class="mono">csdemean</span> option cross-section demeans to soak up <strong>interactive / common-factor effects</strong> (Kaddoura &amp; Westerlund 2023) — the bridge back to cross-sectional dependence.</p>
+          <dl class="kv">
+            <dt>Detects</dt><dd>Per-coefficient breaks; stable coefs left unbroken</dd>
+            <dt>Tuning</dt><dd>κ adaptive weights, λ grid via IC₁</dd>
+            <dt>CSD</dt><dd>csdemean → interactive fixed effects</dd>
+          </dl>
+          <div class="pillrow" style="margin-top:1em">
+            <span class="pill own" style="border-color:var(--break);color:var(--break)">coef-by-coef break</span>
+            <span class="pill csd">csdemean</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="test" style="border-color:var(--factor)">
+        <div class="head">
+          <h3>xtkpybreak <span style="font-family:var(--mono);font-size:.62rem;color:var(--factor);letter-spacing:.08em;vertical-align:middle">◆ CCE + I(1) FACTORS</span></h3>
+          <div class="cite">Roudane (2026) · KPY (2011) &amp; Baltagi–Feng–Wang (2025)</div>
+        </div>
+        <div class="body">
+          <p>The most fully 3ᵍ estimator here: <strong>Common Correlated Effects</strong> that stay valid when the unobserved common factors are <strong>I(1)</strong> (Kapetanios–Pesaran–Yamagata 2011), <em>plus</em> multiple structural breaks in the slopes (and, optionally, the error-factor loadings) estimated jointly by the <strong>Bai–Perron</strong> dynamic-programming algorithm (Baltagi–Feng–Wang 2025).</p>
+          <dl class="kv">
+            <dt>cce</dt><dd>CCEMG / CCEP mean slope, robust to nonstationary factors</dd>
+            <dt>break</dt><dd>m breaks by LS; regime-specific mean-group slopes; super-consistent dates</dd>
+            <dt>loadings</dt><dd>BFW model 5 — breaks in factor loadings too</dd>
+          </dl>
+          <div class="pillrow" style="margin-top:1em">
+            <span class="pill csd">I(1) common factors</span>
+            <span class="pill brk">Bai–Perron breaks</span>
+          </div>
+          <div class="implbar"><span class="k">your Stata</span><span class="cmd a">xtkpybreak cce</span><span class="cmd a">xtkpybreak break</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3>Which command for which assumption</h3>
+    </div>
+    <div class="matwrap">
+      <table class="matrix">
+        <thead>
+          <tr><th>Property</th><th>xtbreakmodel · pls/bfk/sara</th><th>xtbreakmodel · gagfl</th><th>xtcbc · CBCL</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Break type</th><td>Common vector (all K together)</td><td>Group-specific vector</td><td class="own">Coefficient-by-coefficient</td></tr>
+          <tr><th scope="row">Unit heterogeneity</th><td class="no">None — one schedule</td><td class="yes">Latent groups (G)</td><td class="no">None — pooled</td></tr>
+          <tr><th scope="row">Coef heterogeneity</th><td class="no">All K break together</td><td class="no">All K break together</td><td class="yes">Each k independent</td></tr>
+          <tr><th scope="row">Asymptotics</th><td>N→∞, T fixed</td><td>N→∞, T fixed</td><td>N→∞, T fixed</td></tr>
+          <tr><th scope="row">CSD handling</th><td class="no">—</td><td class="no">—</td><td class="yes">csdemean (interactive FE)</td></tr>
+          <tr><th scope="row">Selection</th><td>Fused lasso / SSR / BIC</td><td>Fused lasso + BIC over G</td><td>Adaptive fused L1 + IC₁</td></tr>
+          <tr><th scope="row">Best when</th><td>Homogeneous panel, quick diagnostic</td><td>Suspected latent clusters</td><td>Different regressors shift at different times</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col">
+      <h3>Running them — live demo syntax</h3>
+      <p>Both require a balanced, <span class="mono">xtset</span> panel (N ≥ 10, T ≥ 3). Drop-in blocks for tomorrow:</p>
+      <div class="code"><span class="c">* --- xtbreakmodel: four ways to detect the same breaks ---</span>
+webuse grunfeld, clear
+xtset company year
+<span class="cmd">xtbreakmodel</span> invest mvalue kstock, <span class="opt">method(</span>pls<span class="opt">)</span>              <span class="c">// common vector breaks</span>
+<span class="cmd">xtbreakmodel</span> invest mvalue kstock, <span class="opt">method(</span>bfk<span class="opt">)</span> <span class="opt">nograph</span>      <span class="c">// sequential LS, fast</span>
+<span class="cmd">xtbreakmodel</span> invest mvalue, <span class="opt">method(</span>sara<span class="opt">)</span> <span class="opt">bandwidths(</span>2 3 4<span class="opt">)</span>   <span class="c">// nonparametric</span>
+<span class="cmd">xtbreakmodel</span> invest mvalue, <span class="opt">method(</span>gagfl<span class="opt">)</span> <span class="opt">groups(</span>2<span class="opt">)</span>        <span class="c">// latent groups</span>
+
+<span class="c">* choose G by BIC: loop groups(2..5), compare e(ssr)/IC</span></div>
+      <div class="code"><span class="c">* --- xtcbc: let each coefficient break on its own schedule ---</span>
+xtset id year
+<span class="cmd">xtcbc</span> gdp_growth invest trade inflation, <span class="opt">graph</span>            <span class="c">// per-coef breaks + 3 plots</span>
+<span class="cmd">xtcbc</span> gdp_growth invest trade inflation, <span class="opt">csdemean</span> <span class="opt">graph</span>   <span class="c">// + interactive FE (CSD)</span>
+
+<span class="c">* inspect what broke</span>
+matrix list e(nbreaks)          <span class="c">// breaks per coefficient</span>
+matrix list e(break_dates)      <span class="c">// dates, column k = regressor k</span>
+display "optimal lambda = " e(opt_lambda)</div>
+      <p class="note">Teaching contrast worth showing live: run <span class="mono">pls</span> and <span class="mono">xtcbc</span> on the same data. The vector method (pls) reports the <em>union</em> of all break dates and splits every coefficient there; xtcbc leaves genuinely stable coefficients unbroken. In Kaddoura's crime application, vector-break finds 2 breaks in all 16 coefficients while CBCL finds breaks in only 3 — the headline argument for coefficient-by-coefficient estimation.</p>
+    </div>
+
+    <div class="col">
+      <div class="eyebrow" style="margin-top:1.5em">Capstone · your complete suite</div>
+      <h3 style="font-size:1.4rem">One toolkit across the whole lecture</h3>
+      <p>Every branch of this lecture — unit roots, cointegration, and break estimation, all under cross-sectional dependence — is covered by a command you wrote. This is the map to keep on screen at the end.</p>
+    </div>
+    <div class="matwrap">
+      <table class="matrix">
+        <thead>
+          <tr><th>Command</th><th>Question</th><th>Null H₀</th><th>Breaks</th><th>CSD handled by</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" class="own">xtpqroot</th><td>Panel unit root across quantiles (CIPS τ) + Fourier/LST breaks</td><td>unit root (all i)</td><td>smooth + sharp</td><td>cross-section means / sieve bootstrap</td></tr>
+          <tr><th scope="row" class="own">xtpkpss</th><td>Panel stationarity (Carrion et al. 2005)</td><td class="yes">stationary</td><td>level / trend, Bai–Perron+LWZ</td><td>homog. / heterog. LRV</td></tr>
+          <tr><th scope="row" class="own">xtpcointegwe</th><td>Panel cointegration w/ breaks (W–E 2008)</td><td>no cointegration</td><td>level / regime shift</td><td>common factors (Bai–Ng ICp1)</td></tr>
+          <tr><th scope="row" class="own">xtpcointegboot</th><td>Bootstrap panel cointegration (W–E 2007)</td><td class="yes">cointegration</td><td class="no">— (LM⁺ / FM-OLS)</td><td>sieve bootstrap (VAR)</td></tr>
+          <tr><th scope="row" class="own">xtkpybreak</th><td>CCE mean-group estimation + breaks</td><td class="no">estimation</td><td>Bai–Perron, slopes &amp; loadings</td><td>I(1) common factors (CCE)</td></tr>
+          <tr><th scope="row" class="own">xtbreakmodel</th><td>Estimate vector / grouped coef breaks</td><td class="no">estimation</td><td>common or group-specific</td><td>latent groups (gagfl)</td></tr>
+          <tr><th scope="row" class="own">xtcbc</th><td>Estimate coefficient-by-coefficient breaks</td><td class="no">estimation</td><td>per-coefficient</td><td>csdemean (interactive FE)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <div class="code"><span class="c">* --- the testing half, all cross-section-dependence robust ---</span>
+webuse pennxrate, clear
+xtset id year
+
+<span class="c">* stationarity with endogenous breaks (Carrion et al. 2005)</span>
+<span class="cmd">xtpkpss</span> y, <span class="opt">model(</span>constbreak<span class="opt">)</span> <span class="opt">maxbreaks(</span>3<span class="opt">)</span> <span class="opt">graph</span>
+
+<span class="c">* quantile unit root + asymmetric persistence, then Fourier smooth/sharp breaks</span>
+<span class="cmd">xtpqroot</span> y, <span class="opt">quantile(</span>0.1 0.5 0.9<span class="opt">)</span> <span class="opt">cdtest</span> <span class="opt">individual</span>
+<span class="cmd">xtpqroot</span> y, <span class="opt">fourier</span> <span class="opt">model(</span>trendshift<span class="opt">)</span> <span class="opt">bootreps(</span>2000<span class="opt">)</span>
+
+<span class="c">* cointegration with a break + common factors, and the bootstrap variant</span>
+<span class="cmd">xtpcointegwe</span> y x, <span class="opt">model(</span>regimeshift<span class="opt">)</span> <span class="opt">maxfactors(</span>3<span class="opt">)</span> <span class="opt">graph</span>
+<span class="cmd">xtpcointegboot</span> y x, <span class="opt">model(</span>constant<span class="opt">)</span> <span class="opt">nboot(</span>399<span class="opt">)</span>
+
+<span class="c">* nonstationary CCE with structural breaks (I(1) factors)</span>
+<span class="cmd">xtkpybreak</span> break y x, <span class="opt">nbreaks(</span>1<span class="opt">)</span> <span class="opt">breakplot</span> <span class="opt">coefevolution</span></div>
+      <p class="note">Watch the null column: <span class="mono">xtpkpss</span> and <span class="mono">xtpcointegboot</span> test the <strong>stationarity / cointegration</strong> null (reject ⇒ non-stationary / no cointegration); <span class="mono">xtpqroot</span> and <span class="mono">xtpcointegwe</span> test the <strong>unit-root / no-cointegration</strong> null (reject ⇒ stationary / cointegrated). Same warning as before — state the null before the p-value.</p>
+    </div>
+  </section>
+
+  <!-- WORKFLOW -->
+  <section id="workflow">
+    <div class="col">
+      <div class="eyebrow">Applied decision path</div>
+      <h2>Choosing a test in front of your data</h2>
+      <p>A defensible ordering for an empirical panel study — the sequence a referee will expect to see.</p>
+    </div>
+    <div class="flow" style="margin-top:22px">
+      <div class="step"><div class="n">1</div><div>
+        <h3>Test for cross-sectional dependence first</h3>
+        <p>Pesaran CD test, Breusch–Pagan LM, Pesaran scaled LM. If CD rejects independence, 1ᵍ tests are off the table — you need at least 2ᵍ.</p></div></div>
+      <div class="step"><div class="n">2</div><div>
+        <h3>Test for and date the breaks</h3>
+        <p>Bai–Perron on each series (or the panel deterministic part). If breaks are present, 2ᵍ is not enough either — move to 3ᵍ and let the test estimate T<sub>B</sub>.</p></div></div>
+      <div class="step"><div class="n">3</div><div>
+        <h3>Panel unit-root, break- and CSD-robust</h3>
+        <p>Bai–Carrion PANIC (factor route) or Carrion et al. 2005 stationarity test (KPSS route). Report the null direction explicitly and the estimated break dates.</p></div></div>
+      <div class="step"><div class="n">4</div><div>
+        <h3>Estimate the number of common factors</h3>
+        <p>Bai–Ng IC(p) / ICp2 criteria. This tells you whether the non-stationarity is a shared stochastic trend or idiosyncratic — a substantive economic result, not a nuisance.</p></div></div>
+      <div class="step"><div class="n">5</div><div>
+        <h3>If variables are I(1): cointegration with breaks</h3>
+        <p>Westerlund–Edgerton (single break, simple) or Westerlund (2006) / Banerjee–Carrion (multiple breaks, factors). Match the break in the equilibrium to a real regime change.</p></div></div>
+      <div class="step"><div class="n">6</div><div>
+        <h3>Estimate the break-dated coefficients</h3>
+        <p>Recover <em>where the slopes shift and to what</em>: <span class="mono">xtbreakmodel</span> (common or grouped vector breaks, four engines) or <span class="mono">xtcbc</span> (coefficient-by-coefficient, with <span class="mono">csdemean</span> for interactive effects). Match each estimated date to a real regime change.</p></div></div>
+      <div class="step"><div class="n">7</div><div>
+        <h3>Interpret the long-run relation</h3>
+        <p>CUP-FM / CUP-BC, or Pesaran CS-ARDL / PMG allowing the estimated break. Read the adjustment speed and the shifted long-run coefficients against the dated regime change.</p></div></div>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="refs">
+    <div class="col">
+      <div class="eyebrow">Core references</div>
+      <h2>Reading list</h2>
+      <ol class="refs">
+        <li><b>Bai, J. &amp; Carrion-i-Silvestre, J.L. (2009).</b> Structural changes, common stochastic trends, and unit roots in panel data. <i>Review of Economic Studies</i>, 76(2), 471–501.</li>
+        <li><b>Bai, J. &amp; Ng, S. (2004).</b> A PANIC attack on unit roots and cointegration. <i>Econometrica</i>, 72(4), 1127–1177.</li>
+        <li><b>Carrion-i-Silvestre, J.L., del Barrio-Castro, T. &amp; López-Bazo, E. (2005).</b> Breaking the panels: an application to the GDP per capita. <i>Econometrics Journal</i>, 8(2), 159–175.</li>
+        <li><b>Im, K.S., Lee, J. &amp; Tieslau, M. (2005/2010).</b> Panel LM unit-root tests with level shifts. <i>Oxford Bulletin of Economics and Statistics</i>.</li>
+        <li><b>Pesaran, M.H. (2007).</b> A simple panel unit root test in the presence of cross-section dependence. <i>Journal of Applied Econometrics</i>, 22(2), 265–312.</li>
+        <li><b>Westerlund, J. (2006).</b> Testing for panel cointegration with multiple structural breaks. <i>Oxford Bulletin of Economics and Statistics</i>, 68(1), 101–132.</li>
+        <li><b>Westerlund, J. &amp; Edgerton, D.L. (2008).</b> A simple test for cointegration in dependent panels with structural breaks. <i>Oxford Bulletin of Economics and Statistics</i>, 70(5), 665–704.</li>
+        <li><b>Westerlund, J. (2007).</b> Testing for error correction in panel data. <i>Oxford Bulletin of Economics and Statistics</i>, 69(6), 709–748.</li>
+        <li><b>Banerjee, A. &amp; Carrion-i-Silvestre, J.L. (2017).</b> Testing for panel cointegration using common correlated effects estimators. <i>Journal of Time Series Analysis</i>, 38(4), 610–636.</li>
+        <li><b>Gregory, A.W. &amp; Hansen, B.E. (1996).</b> Residual-based tests for cointegration in models with regime shifts. <i>Journal of Econometrics</i>, 70(1), 99–126.</li>
+      </ol>
+      <p style="font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:1.8em 0 .6em">Coefficient-break estimation strand</p>
+      <ol class="refs" start="11">
+        <li><b>Kaddoura, Y. (2025).</b> Estimating coefficient-by-coefficient breaks in panel data models. <i>Journal of Econometrics</i>, 249, 106005. <span style="color:var(--break)">→ xtcbc</span></li>
+        <li><b>Okui, R. &amp; Wang, Y. (2021).</b> Heterogeneous structural breaks in panel data models. <i>Journal of Econometrics</i>, 220(2), 447–473. <span style="color:var(--accent)">→ xtbreakmodel, gagfl</span></li>
+        <li><b>Qian, J. &amp; Su, L. (2016).</b> Shrinkage estimation of common breaks in panel data models via adaptive group fused lasso. <i>Journal of Econometrics</i>, 191(1), 86–109. <span style="color:var(--accent)">→ xtbreakmodel, pls</span></li>
+        <li><b>Baltagi, B.H., Feng, Q. &amp; Kao, C. (2016).</b> Estimation of heterogeneous panels with structural breaks. <i>Journal of Econometrics</i>, 191(1), 176–195. <span style="color:var(--accent)">→ xtbreakmodel, bfk</span></li>
+        <li><b>Kaddoura, Y. &amp; Westerlund, J. (2023).</b> Estimation of panel data models with random interactive effects and multiple structural breaks when T is fixed. <i>Journal of Business &amp; Economic Statistics</i>, 41(3), 778–790.</li>
+        <li><b>Bonhomme, S. &amp; Manresa, E. (2015).</b> Grouped patterns of heterogeneity in panel data. <i>Econometrica</i>, 83(3), 1147–1184.</li>
+        <li><b>Bai, J. &amp; Perron, P. (1998).</b> Estimating and testing linear models with multiple structural changes. <i>Econometrica</i>, 66(1), 47–78.</li>
+      </ol>
+      <p style="font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--break);margin:1.8em 0 .6em">CSD, quantile &amp; factor strand — your Stata suite</p>
+      <ol class="refs" start="18">
+        <li><b>Kapetanios, G., Pesaran, M.H. &amp; Yamagata, T. (2011).</b> Panels with non-stationary multifactor error structures. <i>Journal of Econometrics</i>, 160(2), 326–348. <span class="mono" style="color:var(--factor)">→ xtkpybreak cce</span></li>
+        <li><b>Baltagi, B.H., Feng, Q. &amp; Wang, W. (2025).</b> Nonstationary heterogeneous panels with multiple structural changes. <i>Econometric Reviews</i>. <span class="mono" style="color:var(--factor)">→ xtkpybreak break</span></li>
+        <li><b>Yang, Z., Wei, Z. &amp; Cai, Y. (2022).</b> Quantile unit root inference for panel data with common shocks. <i>Economics Letters</i>, 219, 110809. <span class="mono" style="color:var(--break)">→ xtpqroot</span></li>
+        <li><b>Corakci, A. &amp; Omay, T. (2023).</b> Is there convergence in renewable energy deployment? A new panel unit root test with smooth and sharp structural breaks. <i>Renewable Energy</i>, 205, 648–662. <span class="mono" style="color:var(--break)">→ xtpqroot, fourier</span></li>
+        <li><b>Nazlioglu, S., Tarakci, D., Karul, C. &amp; Erdem, U. (2026).</b> Inflation shocks: quantile unit-root inference for panel data with cross-correlations. <i>North American Journal of Economics and Finance</i>, 83, 102592.</li>
+        <li><b>McCoskey, S.K. &amp; Kao, C. (1998).</b> A residual-based test of the null of cointegration in panel data. <i>Econometric Reviews</i>, 17(1), 57–84. <span class="mono" style="color:var(--break)">→ xtpcointegboot</span></li>
+        <li><b>Chang, Y. (2004).</b> Bootstrap unit-root tests in panels with cross-sectional dependency. <i>Journal of Econometrics</i>, 120, 263–293.</li>
+        <li><b>Pesaran, M.H. (2006).</b> Estimation and inference in large heterogeneous panels with a multifactor error structure. <i>Econometrica</i>, 74(4), 967–1012.</li>
+        <li><b>Hadri, K. (2000).</b> Testing for stationarity in heterogeneous panel data. <i>Econometrics Journal</i>, 3(2), 148–161. <span class="mono" style="color:var(--break)">→ xtpkpss</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    Lecture aid · third-generation panel data models &amp; structural-break tests<br>
+    Presented &amp; developed by <strong style="color:var(--ink)">Dr Merwan Roudane</strong><br>
+    <a href="https://ideas.repec.org/f/pro1421.html">ideas.repec.org/f/pro1421</a> · github.com/merwanroudane
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var root=document.documentElement;
+
+  /* theme toggle */
+  var tb=document.getElementById('themebtn');
+  function cur(){var a=root.getAttribute('data-theme');if(a)return a;
+    return matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
+  tb.addEventListener('click',function(){
+    var n=cur()==='dark'?'light':'dark';root.setAttribute('data-theme',n);draw();});
+
+  /* nav show + progress bar */
+  var toc=document.getElementById('toc'),bar=document.getElementById('bar');
+  function onScroll(){
+    var y=window.scrollY||0,h=document.body.scrollHeight-innerHeight;
+    bar.style.width=(h>0?(y/h*100):0)+'%';
+    if(y>620)toc.classList.add('show');else toc.classList.remove('show');
+  }
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  /* fade-ins */
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll('.fade-in').forEach(function(el){io.observe(el);});
+
+  /* ---------- canvas demo ---------- */
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height,PADL=54,PADR=20,PADT=24,PADB=34;
+  var N=12,T=100;
+  var csd=true,brk=true,tbFrac=0.50,seed=7;
+  function rng(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+  function gauss(){var u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+  function css(v){return getComputedStyle(root).getPropertyValue(v).trim();}
+
+  function build(){
+    seed=seed||7;
+    // common factor: a random walk (I(1)) shared across units
+    var F=[0];for(var t=1;t<T;t++)F[t]=F[t-1]+gauss()*0.9;
+    var TB=Math.round(tbFrac*T);
+    var series=[];
+    for(var i=0;i<N;i++){
+      var lambda=0.6+rng()*0.9;         // factor loading
+      var mean=(rng()-0.5)*2.2;         // idiosyncratic level
+      var shift=(rng()<0.5?-1:1)*(1.6+rng()*1.4); // break magnitude
+      var s=[];
+      for(var t2=0;t2<T;t2++){
+        var idio=gauss()*0.7;                       // stationary idiosyncratic noise
+        var common=csd?lambda*F[t2]:0;
+        var dj=(brk&&t2>=TB)?shift:0;
+        s.push(mean+common+idio+dj);
+      }
+      series.push(s);
+    }
+    return {F:F,series:series,TB:TB};
+  }
+
+  var data=build();
+
+  function draw(){
+    var cInk=css('--ink'),cMut=css('--muted'),cLine=css('--line'),
+        cFac=css('--factor'),cBrk=css('--break'),cSurf=css('--surface-2'),cFaint=css('--faint');
+    ctx.clearRect(0,0,W,H);
+    // find range
+    var lo=1e9,hi=-1e9,i,t;
+    for(i=0;i<N;i++)for(t=0;t<T;t++){var v=data.series[i][t];if(v<lo)lo=v;if(v>hi)hi=v;}
+    if(csd){for(t=0;t<T;t++){var f=data.F[t]*0.75;/*factor drawn scaled*/}}
+    var pad=(hi-lo)*0.08+0.5;lo-=pad;hi+=pad;
+    function X(t){return PADL+(t/(T-1))*(W-PADL-PADR);}
+    function Y(v){return PADT+(1-(v-lo)/(hi-lo))*(H-PADT-PADB);}
+
+    // grid
+    ctx.strokeStyle=cLine;ctx.lineWidth=1;ctx.font='13px ui-monospace,monospace';
+    ctx.fillStyle=cFaint;ctx.textAlign='right';ctx.textBaseline='middle';
+    for(var g=0;g<=4;g++){
+      var yy=PADT+g/4*(H-PADT-PADB);
+      ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(PADL,yy);ctx.lineTo(W-PADR,yy);ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+    // axis labels
+    ctx.fillText('yᵢₜ',PADL-10,PADT+6);
+    ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText('t = 0',PADL,H-PADB+8);
+    ctx.fillText('t = T',W-PADR,H-PADB+8);
+
+    // break line
+    if(brk){
+      var bx=X(data.TB);
+      ctx.strokeStyle=cBrk;ctx.lineWidth=2;ctx.setLineDash([6,5]);
+      ctx.beginPath();ctx.moveTo(bx,PADT-2);ctx.lineTo(bx,H-PADB+2);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=cBrk;ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.font='700 13px ui-monospace,monospace';
+      ctx.fillText('T_B',bx,PADT+2);
+    }
+
+    // individual series
+    ctx.lineWidth=1.4;ctx.globalAlpha=.62;
+    for(i=0;i<N;i++){
+      ctx.strokeStyle=cMut;ctx.beginPath();
+      for(t=0;t<T;t++){var x=X(t),y=Y(data.series[i][t]);t?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    // common factor overlay
+    if(csd){
+      // rescale factor into view for illustration
+      var fmin=1e9,fmax=-1e9;
+      for(t=0;t<T;t++){if(data.F[t]<fmin)fmin=data.F[t];if(data.F[t]>fmax)fmax=data.F[t];}
+      ctx.strokeStyle=cFac;ctx.lineWidth=3;ctx.beginPath();
+      for(t=0;t<T;t++){
+        var vv=lo+(data.F[t]-fmin)/((fmax-fmin)||1)*(hi-lo);
+        var x2=X(t),y2=Y(vv);t?ctx.lineTo(x2,y2):ctx.moveTo(x2,y2);
+      }
+      ctx.stroke();
+    }
+  }
+
+  /* controls */
+  function setSwitch(el,on){el.classList.toggle('on',on);}
+  var csdT=document.getElementById('csdToggle'),brkT=document.getElementById('brkToggle'),
+      csdSw=document.getElementById('csdSw'),brkSw=document.getElementById('brkSw'),
+      tbR=document.getElementById('tb'),tbV=document.getElementById('tbval'),
+      reseed=document.getElementById('reseed');
+
+  function refresh(rebuild){if(rebuild)data=build();draw();}
+
+  function toggleCsd(){csd=!csd;setSwitch(csdSw,csd);csdT.setAttribute('aria-checked',csd);refresh(true);}
+  function toggleBrk(){brk=!brk;setSwitch(brkSw,brk);brkT.setAttribute('aria-checked',brk);refresh(true);}
+  csdT.addEventListener('click',toggleCsd);
+  brkT.addEventListener('click',toggleBrk);
+  csdT.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();toggleCsd();}});
+  brkT.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();toggleBrk();}});
+  tbR.addEventListener('input',function(){tbFrac=(+tbR.value)/100;tbV.textContent=tbFrac.toFixed(2)+'T';refresh(true);});
+  reseed.addEventListener('click',function(){seed=Math.floor(Math.random()*1e7)+1;refresh(true);});
+
+  // redraw on system theme change (if no explicit toggle)
+  matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(!root.getAttribute('data-theme'))draw();});
+
+  draw();
+})();
+</script>
