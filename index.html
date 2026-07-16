@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>panelconf — التغيرات الهيكلية في بيانات البانل | Structural Breaks in Panel Data</title>
+<style>
+  :root{
+    --bg:#FBF9F4; --paper:#fff; --ink:#1A2330; --muted:#5A6A7A; --line:#E6E4DC;
+    --blue:#2563EB; --teal:#0D9488; --amber:#CA8A04; --grape:#7C3AED;
+    --green:#16A34A; --pink:#DB2777; --red:#DC2626;
+    --shadow:0 1px 2px rgba(30,35,45,.05),0 10px 28px -14px rgba(30,35,45,.25);
+    --ar:"Segoe UI",Tahoma,Arial,sans-serif;
+    --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ar);
+    line-height:1.9;font-size:16.5px}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:linear-gradient(135deg,#1E3A8A 0%,#6D28D9 55%,#BE185D 100%);
+    color:#fff;padding:54px 26px 46px;text-align:center;
+    border-radius:0 0 26px 26px;box-shadow:0 18px 50px -22px rgba(80,30,140,.7)}
+  .hero h1{margin:0 0 8px;font-size:2.1rem;font-weight:800;line-height:1.4}
+  .hero .en{font-size:1.05rem;opacity:.92;direction:ltr;font-family:var(--mono);
+    letter-spacing:.02em;margin-bottom:14px}
+  .hero .by{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.28);
+    font-size:.95rem}
+  .hero a{color:#fff;opacity:.9}
+  h2{font-size:1.4rem;margin:40px 0 6px;padding-right:14px;border-right:6px solid var(--acc,#2563EB)}
+  h2 .en{display:block;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;
+    color:var(--acc,#2563EB);text-transform:uppercase}
+  .grid{display:grid;gap:16px;margin-top:16px}
+  @media(min-width:720px){.grid.two{grid-template-columns:1fr 1fr}}
+  .card{background:var(--paper);border:1px solid var(--line);border-right:6px solid var(--acc);
+    border-radius:14px;padding:20px 22px;box-shadow:var(--shadow);
+    text-decoration:none;color:inherit;display:block;transition:transform .15s}
+  a.card:hover{transform:translateY(-3px)}
+  .card h3{margin:0 0 4px;font-size:1.12rem;color:var(--acc)}
+  .card .lat{font-family:var(--mono);font-size:.75rem;color:#8A98A6;direction:ltr;
+    display:block;margin-bottom:8px}
+  .card p{margin:.3em 0;color:var(--muted);font-size:.93rem}
+  .go{display:inline-block;margin-top:10px;font-weight:700;color:var(--acc);font-size:.9rem}
+  .pkg{font-family:var(--mono);font-size:.75rem;color:var(--green);background:#E8F7EE;
+    padding:.15em .5em;border-radius:5px;display:inline-block;direction:ltr;margin:2px}
+  pre{background:#0F172A;color:#E2E8F0;border-radius:10px;padding:14px 16px;overflow-x:auto;
+    direction:ltr;text-align:left;font-family:var(--mono);font-size:.82rem;line-height:1.7}
+  footer{margin-top:50px;padding-top:22px;border-top:2px solid var(--line);
+    text-align:center;color:var(--muted);font-size:.9rem}
+  footer b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>التغيرات الهيكلية في بيانات البانل</h1>
+  <div class="en">Structural Breaks in Panel Data — Third-Generation Econometrics</div>
+  <div style="font-size:.95rem;opacity:.9">أدلة تفاعلية · محاضرة · مخطط · ملفات Stata جاهزة</div>
+  <div class="by">إعداد: <b>د. مروان رودان</b> — Dr Merwan Roudane<br>
+  <span style="font-size:.85rem;opacity:.85">مؤلّف حزمة <span style="font-family:var(--mono)">xt*</span> (أكثر من 100 وحدة برمجية) ·
+  <a href="https://ideas.repec.org/f/pro1421.html">IDEAS/RePEc</a> ·
+  <a href="https://github.com/merwanroudane">GitHub</a></span></div>
+</div>
+
+<div class="wrap">
+
+<h2 style="--acc:var(--grape)"><span class="en">Guides · الأدلة</span>الأدلة الجاهزة للقراءة</h2>
+<div class="grid two">
+  <a class="card" style="--acc:var(--grape)" href="guides/panel_structural_breaks_guide_AR.html">
+    <h3>📘 الدليل العربي الشامل</h3>
+    <span class="lat">panel_structural_breaks_guide_AR.html</span>
+    <p>أنواع التغيرات الهيكلية: كسر <b>مشترك</b> / <b>غير متجانس</b> / <b>بمجموعات كامنة</b>،
+    وثلاث عائلات للتمثيل: <b>Dummy</b> و<b>Fourier</b> و<b>Regularization</b>،
+    مع خريطة اختيار المنهج وجداول ومراجع.</p>
+    <span class="go">افتح الدليل ←</span>
+  </a>
+  <a class="card" style="--acc:var(--blue)" href="guides/panel_3rd_generation_lecture.html">
+    <h3>📗 Third-Generation Lecture</h3>
+    <span class="lat">panel_3rd_generation_lecture.html</span>
+    <p>The three generations, unit-root &amp; cointegration tests with breaks, break
+    estimators, and an <b>interactive demo</b> of cross-sectional dependence + breaks.</p>
+    <span class="go">Open the lecture →</span>
+  </a>
+</div>
+
+<h2 style="--acc:var(--amber)"><span class="en">Lecture notes · المحاضرة</span>محاضرة LaTeX والمخطط</h2>
+<div class="grid two">
+  <a class="card" style="--acc:var(--amber)" href="lecture/Third_Generation_Panel_Lecture.pdf">
+    <h3>📕 محاضرة كاملة (PDF)</h3>
+    <span class="lat">Third_Generation_Panel_Lecture.pdf — 20 pages</span>
+    <p>من الصفر للمبتدئين: المفاهيم التمهيدية، تشريح الكسر، الاعتماد المقطعي،
+    الثلاث عائلات، GAGFL و CBC و Fourier CCEMG، تطبيق عملي، أسئلة شائعة وتمارين.</p>
+    <span class="go">حمّل الـ PDF ←</span>
+  </a>
+  <a class="card" style="--acc:var(--pink)" href="lecture/panel_three_generations.png">
+    <h3>🖼️ مخطط الأجيال الثلاثة</h3>
+    <span class="lat">panel_three_generations.png — عربي/English</span>
+    <p>مخطط ثنائي اللغة عالي الدقة يوضّح ما يفترضه كل جيل وما يتخلّى عنه،
+    مع أمثلة الاختبارات لكل جيل.</p>
+    <span class="go">اعرض الصورة ←</span>
+  </a>
+</div>
+
+<h2 style="--acc:var(--teal)"><span class="en">Interactive apps · التطبيقات</span>تطبيقا Streamlit</h2>
+<p style="color:var(--muted);font-size:.93rem">يُشغَّلان محليًا (ليسا صفحات ويب) — حمّل المستودع ثم:</p>
+<div class="grid two">
+  <div class="card" style="--acc:var(--teal)">
+    <h3>🎛️ دليل التغيرات الهيكلية</h3>
+    <span class="lat">/ (root) — Streamlit</span>
+    <p>الاختبارات والمقدّرات: جذر الوحدة، التكامل المشترك، Fourier، مقدّرات الكسر،
+    العوامل، تقدير تواريخ الكسر، خريطة البرمجيات.</p>
+    <pre>pip install -r requirements.txt
+streamlit run app.py</pre>
+  </div>
+  <div class="card" style="--acc:var(--blue)">
+    <h3>📐 دليل المفاهيم التمهيدية</h3>
+    <span class="lat">panel_preconcepts_guide/ — Streamlit</span>
+    <p>ما قبل الجيل الثالث: N و T، النماذج الساكنة، التكامل، الأجيال،
+    الاعتماد المقطعي ودرجته، <b>CSA مقابل العوامل</b>، اختبارات CSD،
+    Dummy مقابل Fourier، والـ Regularization.</p>
+    <pre>cd panel_preconcepts_guide
+streamlit run app.py</pre>
+  </div>
+</div>
+
+<h2 style="--acc:var(--green)"><span class="en">Stata do-files · ملفات Stata</span>21 ملف do للمبتدئين</h2>
+<div class="card" style="--acc:var(--green)">
+  <p>ملف لكل أمر، ببيانات <b>حقيقية</b> (<span style="font-family:var(--mono)">webuse grunfeld</span>)،
+  بشرح بلغة بسيطة وخيارات سهلة — وجميعها نُفّذت وتم التحقق منها.</p>
+  <pre>cd stata_do_files
+do 00_START_HERE.do     // تحقّق أن البيانات تُحمّل
+do 01_xtpkpss.do        // ثم أي ملف</pre>
+  <p style="margin-top:10px"><b>ثبّت الأوامر أولًا:</b>
+  <span style="font-family:var(--mono);font-size:.85rem">INSTALL_commands.txt</span></p>
+  <p style="margin-top:10px"><b>الاختبارات:</b>
+  <span class="pkg">xtpkpss</span><span class="pkg">xtpqroot</span><span class="pkg">xtlmbreak</span><span class="pkg">xtpcointegwe</span><span class="pkg">xtpcointegboot</span><span class="pkg">xtbreakcoint</span><span class="pkg">xtccecoint</span><span class="pkg">xtcadfcoint</span><span class="pkg">xtnonlincoint</span><span class="pkg">xtgets</span></p>
+  <p><b>المقدّرات:</b>
+  <span class="pkg">xtbreakmodel</span><span class="pkg">xtcbc</span><span class="pkg">xtkpybreak</span><span class="pkg">xtbfkbreak</span><span class="pkg">xtquantilebreak</span><span class="pkg">xtdynestimb</span><span class="pkg">xtpvarcoint</span></p>
+  <p><b>الجيل الثاني وARDL والسببية:</b>
+  <span class="pkg">xtfmg</span><span class="pkg">xtpfardl</span><span class="pkg">xtpcaus</span></p>
+</div>
+
+<h2 style="--acc:var(--red)"><span class="en">Repository · المستودع</span>تحميل كل شيء</h2>
+<div class="card" style="--acc:var(--red)">
+  <pre>git clone https://github.com/merwanroudane/panelconf.git</pre>
+  <p style="margin-top:10px">أو من صفحة المستودع:
+  <a href="https://github.com/merwanroudane/panelconf" style="color:var(--red);font-weight:700">github.com/merwanroudane/panelconf ←</a></p>
+</div>
+
+<footer>
+  <b>panelconf</b> — التغيرات الهيكلية في بيانات البانل<br>
+  إعداد <b>د. مروان رودان</b> · Dr Merwan Roudane<br>
+  <span style="font-size:.85rem">يُرجى الاستشهاد بالأوراق المنهجية الأصلية عند استعمال الأوامر</span>
+</footer>
+
+</div>
+</body>
+</html>
