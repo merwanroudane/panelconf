@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Method? — A Decision Guide for Structural Breaks in Panel Data</title>
+<style>
+  :root{
+    --bg:#FBFAF6; --paper:#FFFFFF; --ink:#16202E; --muted:#5B6B7C; --faint:#8B98A6;
+    --line:#E7E5DD; --line2:#D2CFC5;
+    --blue:#2563EB; --teal:#0D9488; --amber:#CA8A04; --grape:#7C3AED;
+    --green:#16A34A; --pink:#DB2777; --red:#DC2626; --cyan:#0891B2; --orange:#EA580C;
+    --shadow:0 1px 2px rgba(20,30,45,.05),0 10px 28px -14px rgba(20,30,45,.25);
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.7;font-size:16px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px 80px}
+
+  .hero{background:linear-gradient(135deg,#0F766E 0%,#2563EB 50%,#7C3AED 100%);
+    color:#fff;padding:52px 28px 44px;text-align:center;border-radius:0 0 26px 26px;
+    box-shadow:0 18px 50px -22px rgba(40,60,160,.65);margin-bottom:30px}
+  .hero h1{margin:0 0 10px;font-size:2.2rem;font-weight:800;line-height:1.25}
+  .hero p{margin:0;font-size:1.05rem;opacity:.95;max-width:720px;margin:0 auto}
+  .hero .by{margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,.28);
+    font-size:.92rem}
+  .hero a{color:#fff}
+
+  h2{font-size:1.5rem;font-weight:800;margin:44px 0 8px;padding-left:14px;
+    border-left:6px solid var(--acc,#2563EB)}
+  h2 .k{display:block;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--acc,#2563EB)}
+  h3{font-size:1.15rem;margin:24px 0 8px}
+  p{margin:.5em 0 1em}
+
+  /* ---- decision tool ---- */
+  .tool{background:var(--paper);border:2px solid var(--blue);border-radius:18px;
+    padding:24px 26px;box-shadow:var(--shadow)}
+  .q{margin:18px 0 6px;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:9px}
+  .q .n{background:var(--blue);color:#fff;width:26px;height:26px;border-radius:7px;
+    display:grid;place-items:center;font-size:.8rem;font-weight:800;flex:none}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .opt{border:1.5px solid var(--line2);background:#fff;border-radius:9px;padding:.45em .9em;
+    cursor:pointer;font-size:.88rem;font-family:inherit;color:var(--muted);transition:.15s}
+  .opt:hover{border-color:var(--blue);color:var(--blue)}
+  .opt.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700}
+  .hint{font-size:.82rem;color:var(--faint);margin:0 0 4px 35px}
+
+  .result{margin-top:26px;border-radius:14px;padding:22px 24px;background:#F0FDF4;
+    border:2px solid var(--green)}
+  .result .lab{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--green);font-weight:800}
+  .result .cmd{font-family:var(--mono);font-size:1.5rem;font-weight:800;color:#14532D;
+    margin:6px 0 4px;word-break:break-word}
+  .result .why{color:#166534;font-size:.95rem;margin:8px 0}
+  .result .alts{margin-top:14px;padding-top:12px;border-top:1px dashed #86EFAC;font-size:.9rem;
+    color:#166534}
+  .result .warn{margin-top:12px;background:#FEF2F2;border:1px solid var(--red);
+    border-radius:9px;padding:10px 14px;color:#991B1B;font-size:.88rem}
+  .result .warn b{color:var(--red)}
+  code.c{font-family:var(--mono);background:#DCFCE7;padding:.1em .45em;border-radius:5px;
+    color:#14532D;font-weight:700}
+
+  /* ---- cards ---- */
+  .grid{display:grid;gap:16px;margin:16px 0}
+  @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
+  .card{background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--acc);
+    border-radius:14px;padding:18px 22px;box-shadow:var(--shadow)}
+  .card h4{margin:0 0 3px;font-size:1.06rem;color:var(--acc);font-family:var(--mono);font-weight:800}
+  .card .sub{font-size:.78rem;color:var(--faint);margin-bottom:10px}
+  .use,.avoid{border-radius:9px;padding:9px 13px;margin:7px 0;font-size:.88rem}
+  .use{background:#F0FDF4;border:1px solid #16A34A;color:#14532D}
+  .avoid{background:#FEF2F2;border:1px solid #DC2626;color:#7F1D1D}
+  .use b,.avoid b{display:block;margin-bottom:2px}
+
+  /* ---- flow ---- */
+  .flow{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;
+    box-shadow:var(--shadow);overflow-x:auto;margin:18px 0}
+  .flow svg{display:block;margin:0 auto;min-width:820px}
+
+  /* ---- table ---- */
+  .tw{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:12px}
+  table{width:100%;border-collapse:collapse;font-size:.87rem;min-width:700px;background:#fff}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  thead th{background:var(--acc);color:#fff;font-size:.8rem;font-weight:700;border:none}
+  tbody tr:nth-child(even){background:#FAFAF7}
+  td.m{font-family:var(--mono);font-size:.8rem;color:var(--green);font-weight:700}
+
+  .flag{background:#FEF2F2;border:1px solid var(--red);border-radius:11px;padding:14px 18px;
+    margin:10px 0;font-size:.93rem}
+  .flag b.t{display:block;color:var(--red);font-weight:800;margin-bottom:3px}
+  .ok{background:#F0FDF4;border:1px solid var(--green);border-radius:11px;padding:14px 18px;
+    margin:10px 0;font-size:.93rem}
+  .ok b.t{display:block;color:#15803D;font-weight:800;margin-bottom:3px}
+
+  footer{margin-top:50px;padding-top:22px;border-top:2px solid var(--line);text-align:center;
+    color:var(--muted);font-size:.9rem}
+  footer b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Which Method Should I Use?</h1>
+  <p>A decision guide for <b>structural breaks in panel data</b>. Answer a few diagnostic
+  questions and get the right test or estimator — with the reason, the alternatives, and the
+  traps to avoid.</p>
+  <div class="by">By <b>Dr Merwan Roudane</b> — author of the <span style="font-family:var(--mono)">xt*</span>
+  panel structural-break Stata suite<br>
+  <span style="font-size:.85rem;opacity:.9"><a href="https://ideas.repec.org/f/pro1421.html">IDEAS/RePEc</a> ·
+  <a href="https://github.com/merwanroudane">GitHub</a></span></div>
+</div>
+
+<div class="wrap">
+
+<!-- ============ INTERACTIVE TOOL ============ -->
+<h2 style="--acc:var(--blue)"><span class="k">Step 1 · The interactive chooser</span>Answer these, get your method</h2>
+<p>Every question maps to a real assumption. Your answers narrow the field to one command.</p>
+
+<div class="tool">
+  <div class="q"><span class="n">1</span>What do you want to do?</div>
+  <div class="hint">This is the main branch — everything else refines it.</div>
+  <div class="opts" data-g="goal">
+    <button class="opt on" data-v="unitroot">Test for a unit root / stationarity</button>
+    <button class="opt" data-v="coint">Test for cointegration (long-run relation)</button>
+    <button class="opt" data-v="estimate">Find break dates &amp; estimate coefficients</button>
+    <button class="opt" data-v="longrun">Estimate a long-run ARDL relation</button>
+    <button class="opt" data-v="causality">Test Granger causality</button>
+    <button class="opt" data-v="detect">Only detect / date the breaks</button>
+  </div>
+
+  <div class="q"><span class="n">2</span>Is there cross-sectional dependence (CSD)?</div>
+  <div class="hint">Run the Pesaran CD test first. In macro panels the answer is almost always “yes”.</div>
+  <div class="opts" data-g="csd">
+    <button class="opt on" data-v="yes">Yes — CD rejects</button>
+    <button class="opt" data-v="no">No</button>
+    <button class="opt" data-v="unk">I don't know yet</button>
+  </div>
+
+  <div class="q"><span class="n">3</span>Is the break sharp or gradual?</div>
+  <div class="hint">Sharp = a policy date / crisis. Gradual = slow structural change (technology, transition).</div>
+  <div class="opts" data-g="shape">
+    <button class="opt on" data-v="sharp">Sharp (a step)</button>
+    <button class="opt" data-v="smooth">Gradual / smooth</button>
+    <button class="opt" data-v="both">Both / I'm not sure</button>
+  </div>
+
+  <div class="q"><span class="n">4</span>Do all units break at the same date?</div>
+  <div class="hint">Same date = common break. Different dates = heterogeneous. In between = latent groups.</div>
+  <div class="opts" data-g="timing">
+    <button class="opt on" data-v="common">Same date (common)</button>
+    <button class="opt" data-v="groups">Groups of units differ</button>
+    <button class="opt" data-v="diff">Every unit differs</button>
+    <button class="opt" data-v="unk">Unknown</button>
+  </div>
+
+  <div class="q"><span class="n">5</span>Do all coefficients break together?</div>
+  <div class="hint">If you suspect only some effects moved, a vector break will over-split the rest.</div>
+  <div class="opts" data-g="coefs">
+    <button class="opt on" data-v="all">All together (vector)</button>
+    <button class="opt" data-v="some">Only some of them</button>
+    <button class="opt" data-v="unk">Unknown</button>
+  </div>
+
+  <div class="q"><span class="n">6</span>Any special feature? (optional)</div>
+  <div class="hint">Click one if it applies — it can override the recommendation.</div>
+  <div class="opts" data-g="extra">
+    <button class="opt on" data-v="none">None</button>
+    <button class="opt" data-v="endog">A regressor is endogenous</button>
+    <button class="opt" data-v="loadings">Factor loadings may break</button>
+    <button class="opt" data-v="quantile">Effects differ across quantiles</button>
+    <button class="opt" data-v="dynamic">Dynamic model (lagged y)</button>
+    <button class="opt" data-v="var">I want a panel VAR / VECM</button>
+  </div>
+
+  <div class="q"><span class="n">7</span>Your panel size</div>
+  <div class="opts" data-g="size">
+    <button class="opt on" data-v="both">N and T both reasonable (macro panel)</button>
+    <button class="opt" data-v="shortT">T is short (&lt; 20)</button>
+    <button class="opt" data-v="smallN">N is small (&lt; 10)</button>
+  </div>
+
+  <div class="result" id="res"></div>
+</div>
+
+<!-- ============ FLOWCHART ============ -->
+<h2 style="--acc:var(--grape)"><span class="k">Step 2 · The map</span>The decision flowchart</h2>
+<div class="flow">
+<svg viewBox="0 0 840 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision flowchart">
+  <rect x="320" y="6" width="200" height="34" rx="8" fill="#16202E"/>
+  <text x="420" y="28" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="bold">START: your panel</text>
+  <line x1="420" y1="40" x2="420" y2="58" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="300" y="58" width="240" height="34" rx="8" fill="#0891B2"/>
+  <text x="420" y="80" text-anchor="middle" fill="#fff" font-size="12">1. CD test — is there CSD?</text>
+  <line x1="420" y1="92" x2="420" y2="110" stroke="#94A3B8" stroke-width="2"/>
+  <text x="452" y="106" fill="#DC2626" font-size="10" font-weight="bold">yes → 1st gen is dead</text>
+  <rect x="300" y="110" width="240" height="34" rx="8" fill="#CA8A04"/>
+  <text x="420" y="132" text-anchor="middle" fill="#fff" font-size="12">2. Is the break date known?</text>
+
+  <line x1="420" y1="144" x2="420" y2="160" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="150" y1="160" x2="690" y2="160" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="150" y1="160" x2="150" y2="180" stroke="#DC2626" stroke-width="2"/>
+  <line x1="420" y1="160" x2="420" y2="180" stroke="#7C3AED" stroke-width="2"/>
+  <line x1="690" y1="160" x2="690" y2="180" stroke="#16A34A" stroke-width="2"/>
+  <text x="150" y="175" text-anchor="middle" fill="#DC2626" font-size="10" font-weight="bold">YES</text>
+  <text x="420" y="175" text-anchor="middle" fill="#7C3AED" font-size="10" font-weight="bold">NO — gradual</text>
+  <text x="690" y="175" text-anchor="middle" fill="#16A34A" font-size="10" font-weight="bold">NO — let data decide</text>
+
+  <rect x="45" y="180" width="210" height="42" rx="8" fill="#DC2626"/>
+  <text x="150" y="200" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="bold">DUMMY</text>
+  <text x="150" y="215" text-anchor="middle" fill="#FEE2E2" font-size="10">sharp, dated breaks</text>
+  <rect x="315" y="180" width="210" height="42" rx="8" fill="#7C3AED"/>
+  <text x="420" y="200" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="bold">FOURIER</text>
+  <text x="420" y="215" text-anchor="middle" fill="#EDE9FE" font-size="10">smooth, no date needed</text>
+  <rect x="585" y="180" width="210" height="42" rx="8" fill="#16A34A"/>
+  <text x="690" y="200" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="bold">REGULARIZATION</text>
+  <text x="690" y="215" text-anchor="middle" fill="#DCFCE7" font-size="10">automatic detection</text>
+
+  <line x1="150" y1="222" x2="150" y2="242" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="420" y1="222" x2="420" y2="242" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="690" y1="222" x2="690" y2="242" stroke="#CBD5E1" stroke-width="1.5"/>
+
+  <rect x="45" y="242" width="210" height="80" rx="8" fill="#FEF2F2" stroke="#DC2626"/>
+  <text x="150" y="260" text-anchor="middle" fill="#991B1B" font-size="10">unit root → xtpkpss</text>
+  <text x="150" y="276" text-anchor="middle" fill="#991B1B" font-size="10">coint → xtlmbreak</text>
+  <text x="150" y="292" text-anchor="middle" fill="#991B1B" font-size="10">coint+factors → xtpcointegwe</text>
+  <text x="150" y="308" text-anchor="middle" fill="#991B1B" font-size="10">coint+CSD → xtbreakcoint</text>
+
+  <rect x="315" y="242" width="210" height="80" rx="8" fill="#F5F3FF" stroke="#7C3AED"/>
+  <text x="420" y="260" text-anchor="middle" fill="#5B21B6" font-size="10">unit root → xtpqroot, fourier</text>
+  <text x="420" y="276" text-anchor="middle" fill="#5B21B6" font-size="10">ARDL → xtpfardl</text>
+  <text x="420" y="292" text-anchor="middle" fill="#5B21B6" font-size="10">coint → xtnonlincoint</text>
+  <text x="420" y="308" text-anchor="middle" fill="#5B21B6" font-size="10">diff. dates → xtfmg fccemg</text>
+
+  <rect x="585" y="242" width="210" height="80" rx="8" fill="#F0FDF4" stroke="#16A34A"/>
+  <text x="690" y="260" text-anchor="middle" fill="#166534" font-size="10">common → xtbreakmodel, pls</text>
+  <text x="690" y="276" text-anchor="middle" fill="#166534" font-size="10">groups → xtbreakmodel, gagfl</text>
+  <text x="690" y="292" text-anchor="middle" fill="#166534" font-size="10">per-coef → xtcbc</text>
+  <text x="690" y="308" text-anchor="middle" fill="#166534" font-size="10">quantiles → xtquantilebreak</text>
+
+  <line x1="420" y1="322" x2="420" y2="344" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="245" y="344" width="350" height="34" rx="8" fill="#DB2777"/>
+  <text x="420" y="366" text-anchor="middle" fill="#fff" font-size="12">Do factor loadings break too? → xtkpybreak</text>
+  <line x1="420" y1="378" x2="420" y2="396" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="245" y="396" width="350" height="30" rx="8" fill="#0D9488"/>
+  <text x="420" y="416" text-anchor="middle" fill="#fff" font-size="11.5">Always: match each break date to a real event</text>
+</svg>
+</div>
+
+<!-- ============ PROFILES ============ -->
+<h2 style="--acc:var(--red)"><span class="k">Step 3 · Method profiles</span>Use when / avoid when</h2>
+
+<h3>🔲 Dummy family — sharp, dated breaks</h3>
+<div class="grid two">
+  <div class="card" style="--acc:var(--red)"><h4>xtpkpss</h4>
+    <div class="sub">Panel KPSS stationarity with multiple breaks · Carrion et al. (2005)</div>
+    <div class="use"><b>✅ Use when</b>you want the <b>stationarity null</b> (theory predicts convergence/PPP),
+    breaks are sharp in level/trend, and each unit may have its own dates.</div>
+    <div class="avoid"><b>❌ Avoid when</b>breaks are gradual, or you need the unit-root null.</div>
+  </div>
+  <div class="card" style="--acc:var(--red)"><h4>xtlmbreak</h4>
+    <div class="sub">LM cointegration, multiple breaks · Westerlund (2006)</div>
+    <div class="use"><b>✅ Use when</b>you believe the equilibrium exists and want to test whether a
+    break destroys it (<b>H₀ = cointegration</b>), with breaks in level/trend at different dates.</div>
+    <div class="avoid"><b>❌ Avoid when</b>you want the "no cointegration" null, or breaks are smooth.</div>
+  </div>
+  <div class="card" style="--acc:var(--red)"><h4>xtpcointegwe / xtpcointegboot</h4>
+    <div class="sub">Westerlund–Edgerton (2008 factors / 2007 bootstrap)</div>
+    <div class="use"><b>✅ Use when</b>you want cointegration with a <b>level or regime shift</b> and CSD
+    removed by common factors (<code>we</code>), or a bootstrap when N is not huge (<code>boot</code>).</div>
+    <div class="avoid"><b>❌ Avoid when</b>the break also hits the factor loadings — use <code>xtcadfcoint</code>.</div>
+  </div>
+  <div class="card" style="--acc:var(--red)"><h4>xtbreakcoint / xtccecoint / xtcadfcoint</h4>
+    <div class="sub">Banerjee–Carrion-i-Silvestre (2015 / 2017 / 2025)</div>
+    <div class="use"><b>✅ Use when</b>breaks + CSD together and <b>H₀ = no cointegration</b>.
+    Use the <b>2025</b> one (<code>xtcadfcoint</code>) when breaks may hit the deterministic part,
+    the cointegrating vector <b>and</b> the loadings.</div>
+    <div class="avoid"><b>❌ Avoid when</b>T is very short — these are large-T tests.</div>
+  </div>
+</div>
+
+<h3>〰️ Fourier family — smooth / unknown-timing breaks</h3>
+<div class="grid two">
+  <div class="card" style="--acc:var(--grape)"><h4>xtpqroot, fourier</h4>
+    <div class="sub">tFR: smooth + sharp breaks · Corakci &amp; Omay (2023)</div>
+    <div class="use"><b>✅ Use when</b>you suspect a <b>gradual</b> transition, or both gradual and abrupt
+    at once, and you don't know the date or the number of breaks.</div>
+    <div class="avoid"><b>❌ Avoid when</b>you have one clean, known policy date — a dummy is sharper.</div>
+  </div>
+  <div class="card" style="--acc:var(--grape)"><h4>xtfmg fccemg</h4>
+    <div class="sub">Fourier CCE Mean Group · Guliyev (2026)</div>
+    <div class="use"><b>✅ Use when</b>breaks occur at <b>different dates in every unit</b> — dummies would
+    explode in number. Fourier terms absorb them while cross-section averages kill the common shock.</div>
+    <div class="avoid"><b>❌ Avoid when</b>you need the <b>exact break dates</b> — Fourier does not report them.</div>
+  </div>
+  <div class="card" style="--acc:var(--grape)"><h4>xtpfardl</h4>
+    <div class="sub">Fourier panel ARDL / CS-ARDL</div>
+    <div class="use"><b>✅ Use when</b>your regressors are <b>mixed I(0)/I(1)</b> and you want the
+    <b>long-run + short-run</b> coefficients with a smoothly shifting equilibrium.</div>
+    <div class="avoid"><b>❌ Avoid when</b><code>xtdcce2</code> is not installed (it is the engine).</div>
+  </div>
+  <div class="card" style="--acc:var(--grape)"><h4>xtnonlincoint</h4>
+    <div class="sub">Nonlinear ECM / Fourier cointegration · Omay et al. (2017)</div>
+    <div class="use"><b>✅ Use when</b>adjustment back to equilibrium is <b>asymmetric</b> (faster above than
+    below), or you want a Fourier smooth-break cointegration test.</div>
+    <div class="avoid"><b>❌ Avoid when</b>adjustment is plausibly linear — you lose power for nothing.</div>
+  </div>
+</div>
+
+<h3>🎛️ Regularization family — let the data find the breaks</h3>
+<div class="grid two">
+  <div class="card" style="--acc:var(--green)"><h4>xtbreakmodel, method(pls)</h4>
+    <div class="sub">Adaptive group fused lasso · Qian &amp; Su (2016)</div>
+    <div class="use"><b>✅ Use when</b>you expect a <b>common</b> break schedule and want the number and
+    dates chosen automatically. Good default first try.</div>
+    <div class="avoid"><b>❌ Avoid when</b>units clearly break at different dates → use <code>gagfl</code>.</div>
+  </div>
+  <div class="card" style="--acc:var(--green)"><h4>xtbreakmodel, method(gagfl)</h4>
+    <div class="sub">Grouped adaptive group fused lasso · Okui &amp; Wang (2021)</div>
+    <div class="use"><b>✅ Use when</b>you suspect <b>latent groups</b> — e.g. one cluster broke in 2008,
+    another in 2011 — and you don't know who belongs where. It finds groups <b>and</b> dates.</div>
+    <div class="avoid"><b>❌ Avoid when</b>N is small (groups need members), or you need speed — it is the
+    heaviest method.</div>
+  </div>
+  <div class="card" style="--acc:var(--green)"><h4>xtcbc</h4>
+    <div class="sub">Coefficient-by-coefficient breaks · Kaddoura (2025)</div>
+    <div class="use"><b>✅ Use when</b>you suspect <b>only some coefficients</b> break. It leaves stable ones
+    unbroken, keeping their standard errors small. Built for <b>large N, small T</b>.</div>
+    <div class="avoid"><b>❌ Avoid when</b>theory says everything shifts together at one regime change.</div>
+  </div>
+  <div class="card" style="--acc:var(--green)"><h4>xtquantilebreak</h4>
+    <div class="sub">Shrinkage quantile breaks · Zhang et al. (2022)</div>
+    <div class="use"><b>✅ Use when</b>the effect may break <b>differently in good vs bad times</b> — i.e.
+    across quantiles of the outcome.</div>
+    <div class="avoid"><b>❌ Avoid when</b>you only care about the conditional mean.</div>
+  </div>
+</div>
+
+<h3>🌐 Factor-aware estimators &amp; specials</h3>
+<div class="grid two">
+  <div class="card" style="--acc:var(--pink)"><h4>xtkpybreak</h4>
+    <div class="sub">CCE with I(1) factors + breaks in slopes AND loadings · KPY (2011); BFW (2025)</div>
+    <div class="use"><b>✅ Use when</b>factors are <b>non-stationary (I(1))</b> and/or the <b>factor loadings</b>
+    themselves may break. The most fully third-generation estimator here.</div>
+    <div class="avoid"><b>❌ Avoid when</b>breaks are heterogeneous in timing — CCE needs a common break.</div>
+  </div>
+  <div class="card" style="--acc:var(--cyan)"><h4>xtbfkbreak</h4>
+    <div class="sub">Common break + CCE, endogenous regressors · Baltagi–Feng–Kao</div>
+    <div class="use"><b>✅ Use when</b>a regressor is <b>endogenous</b> and you still need a common break with
+    CSD removed. Syntax: <code class="c">xtbfkbreak y (x = z), breaks(1)</code></div>
+    <div class="avoid"><b>❌ Avoid when</b>you have no valid instrument.</div>
+  </div>
+  <div class="card" style="--acc:var(--orange)"><h4>xtdynestimb</h4>
+    <div class="sub">Dynamic panel robust to breaks and CSD</div>
+    <div class="use"><b>✅ Use when</b>the model is <b>dynamic</b> (lagged y) and you need estimates robust to
+    breaks + dependence. Nickell bias makes plain FE unsafe here.</div>
+    <div class="avoid"><b>❌ Avoid when</b>the model is static — simpler tools are better.</div>
+  </div>
+  <div class="card" style="--acc:var(--teal)"><h4>xtpvarcoint</h4>
+    <div class="sub">Panel VAR / VECM with cointegration and breaks</div>
+    <div class="use"><b>✅ Use when</b>you want a <b>system</b> (all variables endogenous), impulse responses,
+    or variance decomposition.</div>
+    <div class="avoid"><b>❌ Avoid when</b>you have one clear dependent variable — a single equation is cheaper.</div>
+  </div>
+  <div class="card" style="--acc:var(--amber)"><h4>xtgets · xtfmg breaks</h4>
+    <div class="sub">Break detection only</div>
+    <div class="use"><b>✅ Use when</b>you want to <b>discover which units broke and when</b> before choosing a
+    model. <code>xtgets</code> uses indicator saturation; <code>xtfmg breaks</code> a per-unit sup-Wald test.</div>
+    <div class="avoid"><b>❌ Avoid as</b>your final model — these are diagnostics, not estimators.</div>
+  </div>
+  <div class="card" style="--acc:var(--blue)"><h4>xtpcaus</h4>
+    <div class="sub">Panel causality: Fourier Toda–Yamamoto &amp; quantile causality</div>
+    <div class="use"><b>✅ Use when</b>the question is "does x help predict y?" — PFTY is robust to unit roots
+    and smooth breaks; PQC tests causality at different quantiles.</div>
+    <div class="avoid"><b>❌ Avoid</b>interpreting it as structural causality — it is <b>predictive</b> causality.</div>
+  </div>
+</div>
+
+<!-- ============ MATRIX ============ -->
+<h2 style="--acc:var(--teal)"><span class="k">Step 4 · Compare</span>The comparison matrix</h2>
+<div class="tw"><table style="--acc:var(--teal)">
+<thead><tr><th>Property</th><th>Dummy</th><th>Fourier</th><th>Regularization</th></tr></thead>
+<tbody>
+<tr><td><b>Break shape</b></td><td>sharp only</td><td>smooth (or both, tFR)</td><td>sharp, multiple</td></tr>
+<tr><td><b>Break date</b></td><td>known or estimated</td><td>not needed</td><td>not needed — selected</td></tr>
+<tr><td><b>Number of breaks</b></td><td>you choose (IC / sup-F)</td><td>implicit in the frequency</td><td>selected automatically</td></tr>
+<tr><td><b>Interpretation</b></td><td>very high</td><td>medium</td><td>high</td></tr>
+<tr><td><b>Heterogeneous timing</b></td><td>poor (dummy explosion)</td><td>good (unit-specific Fourier)</td><td>excellent (groups)</td></tr>
+<tr><td><b>Large data</b></td><td>weak</td><td>good</td><td>excellent</td></tr>
+<tr><td><b>CSD handling</b></td><td>add factors/bootstrap</td><td>CCE averages</td><td>csdemean / CCE</td></tr>
+<tr><td><b>Computation</b></td><td>fast</td><td>fast</td><td>heavy (esp. GAGFL)</td></tr>
+</tbody></table></div>
+
+<!-- ============ RED FLAGS ============ -->
+<h2 style="--acc:var(--red)"><span class="k">Step 5 · Traps</span>Red flags — the mistakes that get papers rejected</h2>
+<div class="flag"><b class="t">🚩 1. Reading the p-value without stating the null</b>
+Half these tests have <b>H₀ = cointegration</b> (<code class="c">xtlmbreak</code>, <code class="c">xtpcointegboot</code>)
+and half <b>H₀ = no cointegration</b> (<code class="c">xtpcointegwe</code>, <code class="c">xtbreakcoint</code>).
+"Reject" means <b>opposite</b> things. This is the single most common error.</div>
+<div class="flag"><b class="t">🚩 2. Using a first-generation test after the CD test rejected</b>
+LLC/IPS/Pedroni assume independence. Under CSD they <b>over-reject</b> — you will "find" stationarity
+or cointegration that is an artefact of a shared global shock.</div>
+<div class="flag"><b class="t">🚩 3. Ignoring a break in a unit-root test</b>
+The <b>Perron critique</b>: a stationary series around a shifted mean looks like a unit root. You will
+wrongly conclude I(1) and difference away a real relationship.</div>
+<div class="flag"><b class="t">🚩 4. A break date with no story</b>
+If your estimated break is 1994 and nothing happened in 1994, suspect an artefact. Always report the
+date <b>with a confidence interval</b> and attribute it to a real event.</div>
+<div class="flag"><b class="t">🚩 5. Forcing a vector break when only one coefficient moved</b>
+It splits every coefficient at the union of dates, inflating variance and hiding significance.
+Kaddoura's crime example: vector-break finds 2 breaks in <b>all 16</b> coefficients; CBC finds them in
+<b>only 3</b>. Use <code class="c">xtcbc</code>.</div>
+<div class="flag"><b class="t">🚩 6. Running a large-T test on T = 12</b>
+Unit-root and cointegration asymptotics rest on Brownian motion — they need a decent T (≥ 20–30).
+With short T use fixed-T methods (CBC, Baltagi–Feng–Kao).</div>
+<div class="ok"><b class="t">✅ The defensible workflow</b>
+CD test → detect/date breaks → unit root <i>with</i> breaks &amp; CSD → number of factors →
+cointegration <i>with</i> breaks → estimate the break-dated coefficients → interpret each date
+against a real event.</div>
+
+<!-- ============ CHEAT SHEET ============ -->
+<h2 style="--acc:var(--amber)"><span class="k">Step 6 · Cheat-sheet</span>One table to keep open</h2>
+<div class="tw"><table style="--acc:var(--amber)">
+<thead><tr><th>Your situation</th><th>Use</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Is there dependence at all?</td><td class="m">xtcd2</td><td>Pesaran CD — always step 1</td></tr>
+<tr><td>Who broke, and when?</td><td class="m">xtgets · xtfmg breaks</td><td>break detection / diagnosis</td></tr>
+<tr><td>Unit root, sharp breaks, stationarity null</td><td class="m">xtpkpss</td><td>panel KPSS, multiple breaks</td></tr>
+<tr><td>Unit root, gradual breaks / unknown timing</td><td class="m">xtpqroot, fourier</td><td>tFR: smooth + sharp</td></tr>
+<tr><td>Unit root, asymmetric persistence</td><td class="m">xtpqroot, quantile()</td><td>CIPS(τ) across quantiles</td></tr>
+<tr><td>Cointegration, H₀ = cointegration</td><td class="m">xtlmbreak · xtpcointegboot</td><td>LM / bootstrap LM⁺</td></tr>
+<tr><td>Cointegration, H₀ = no cointegration, + factors</td><td class="m">xtpcointegwe · xtbreakcoint</td><td>PD-τ/PD-φ; factor-based</td></tr>
+<tr><td>Cointegration + breaks in loadings too</td><td class="m">xtcadfcoint</td><td>Banerjee–Carrion 2025</td></tr>
+<tr><td>Cointegration, asymmetric adjustment</td><td class="m">xtnonlincoint</td><td>nonlinear ECM</td></tr>
+<tr><td>Estimate common breaks</td><td class="m">xtbreakmodel, pls/bfk/sara</td><td>fused lasso / LS / nonparametric</td></tr>
+<tr><td>Estimate grouped breaks</td><td class="m">xtbreakmodel, gagfl</td><td>latent groups + own dates</td></tr>
+<tr><td>Only some coefficients break</td><td class="m">xtcbc</td><td>coefficient-by-coefficient</td></tr>
+<tr><td>I(1) factors and/or loading breaks</td><td class="m">xtkpybreak</td><td>CCE valid with I(1) factors</td></tr>
+<tr><td>Endogenous regressor + break</td><td class="m">xtbfkbreak</td><td>IV with common break</td></tr>
+<tr><td>Breaks across quantiles</td><td class="m">xtquantilebreak</td><td>shrinkage quantile regression</td></tr>
+<tr><td>Different dates in every unit</td><td class="m">xtfmg fccemg</td><td>Fourier absorbs the timing</td></tr>
+<tr><td>Long-run ARDL with smooth break</td><td class="m">xtpfardl</td><td>Fourier CS-ARDL / PMG</td></tr>
+<tr><td>Dynamic model + breaks + CSD</td><td class="m">xtdynestimb</td><td>robust dynamic estimators</td></tr>
+<tr><td>Panel VAR / VECM system</td><td class="m">xtpvarcoint</td><td>IRF, FEVD, cointegration</td></tr>
+<tr><td>Does x predict y?</td><td class="m">xtpcaus</td><td>PFTY / quantile causality</td></tr>
+</tbody></table></div>
+
+<footer>
+  <b>Which Method Should I Use?</b> — a decision guide for structural breaks in panel data<br>
+  By <b>Dr Merwan Roudane</b> · author of the <span style="font-family:var(--mono)">xt*</span> suite (100+ modules)<br>
+  <span style="font-size:.85rem">ideas.repec.org/f/pro1421 · github.com/merwanroudane —
+  please cite the original methodological papers when using the commands</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var S = {goal:"unitroot", csd:"yes", shape:"sharp", timing:"common",
+           coefs:"all", extra:"none", size:"both"};
+
+  document.querySelectorAll(".opts").forEach(function(group){
+    var g = group.dataset.g;
+    group.querySelectorAll(".opt").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        group.querySelectorAll(".opt").forEach(function(b){ b.classList.remove("on"); });
+        btn.classList.add("on");
+        S[g] = btn.dataset.v;
+        render();
+      });
+    });
+  });
+
+  function decide(){
+    var cmd, why, alts = [], warns = [];
+
+    // ---- universal warnings ----
+    if (S.csd === "unk")
+      warns.push("You must run the <b>Pesaran CD test</b> (<code>xtcd2</code>) first — it decides whether first-generation tools are even allowed.");
+    if (S.csd === "no")
+      warns.push("Independence is rare in macro panels. If the CD test has not actually been run and failed to reject, do not assume 'no'.");
+    if (S.size === "shortT")
+      warns.push("With <b>short T</b>, unit-root and cointegration asymptotics (Brownian motion) are unreliable. Prefer fixed-T methods and treat results as indicative.");
+    if (S.size === "smallN")
+      warns.push("With <b>small N</b>, cross-sectional averages (CCE) are noisy and latent groups cannot be identified. Prefer bootstrap/SUR or time-series methods.");
+
+    // ---- special features override ----
+    if (S.extra === "var"){
+      return {cmd:"xtpvarcoint",
+        why:"You asked for a <b>system</b>. Panel VAR/VECM treats all variables as endogenous and gives cointegration tests, impulse responses and variance decomposition, with breaks and CSD.",
+        alts:["If you actually have one dependent variable, a single-equation method is cheaper and more powerful."], warns:warns};
+    }
+    if (S.extra === "dynamic" && S.goal !== "causality"){
+      return {cmd:"xtdynestimb",
+        why:"Your model is <b>dynamic</b> (lagged y). Plain fixed effects suffer <b>Nickell bias</b> of order 1/T; this command gives dynamic estimators robust to breaks and cross-sectional dependence.",
+        alts:["<code>xtpfardl</code> if you want the long-run/short-run ARDL split instead."], warns:warns};
+    }
+
+    // ---- goal branches ----
+    if (S.goal === "causality"){
+      cmd = "xtpcaus, test(pfty)";
+      why = "For causality, <b>PFTY</b> (Fourier Toda–Yamamoto) is the safe default: the Toda–Yamamoto augmentation means you do <b>not</b> need to pre-test for unit roots, and the Fourier terms stop smooth breaks from fooling the test.";
+      alts.push("Run it in <b>both directions</b> — causality has a direction.");
+      if (S.extra === "quantile" || S.coefs === "some")
+        { cmd = "xtpcaus, test(pqc)"; why = "You expect the effect to differ across the distribution, so use <b>Panel Quantile Causality</b>: x may cause y only in bad times (low quantiles) or only in good times."; alts.push("Also run <code>test(pfty)</code> for the mean-based benchmark."); }
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+
+    if (S.goal === "detect"){
+      cmd = "xtgets, fesis";
+      why = "You only want to <b>discover</b> which units broke and when. Indicator saturation tests a large set of candidate break dummies and keeps the ones that survive — it discovers treated units and timing rather than requiring you to specify them.";
+      alts.push("<code>xtfmg breaks</code> — a per-unit sup-Wald (Andrews 1993) break test.");
+      alts.push("These are <b>diagnostics</b>: follow with a proper estimator.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+
+    if (S.goal === "longrun"){
+      cmd = "xtpfardl, model(csardl)";
+      why = "ARDL handles regressors of <b>mixed I(0)/I(1)</b> order and separates the <b>long-run</b> from the <b>short-run</b>. The Fourier terms let the long-run equilibrium shift <b>smoothly</b>, and the cross-section averages remove the common shock.";
+      if (S.shape === "sharp")
+        alts.push("Your break is sharp — add <code>nofourier</code> to compare with a standard panel ARDL, or use a dummy-based cointegration test to date it.");
+      alts.push("<code>model(pmg)</code> pools the long run (test it with the <code>hausman</code> option).");
+      warns.push("<code>xtpfardl</code> requires <b>xtdcce2</b> installed (it is the engine).");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+
+    if (S.goal === "unitroot"){
+      if (S.shape === "smooth" || S.shape === "both"){
+        cmd = "xtpqroot, fourier";
+        why = "Your break is <b>gradual</b> (or you are unsure), so a dummy at a single date is the wrong shape. The <b>tFR</b> test combines a fractional Fourier term (smooth) with a logistic transition (sharp), so the data decide — and no break date has to be estimated. CSD is handled by a sieve bootstrap.";
+        alts.push("<code>xtpkpss, model(constbreak)</code> if you decide the break really is a clean step.");
+      } else if (S.extra === "quantile"){
+        cmd = "xtpqroot, quantile(0.25 0.5 0.75)";
+        why = "You expect <b>asymmetric persistence</b>. CIPS(τ) tests the unit root at each quantile — a series can be mean-reverting in calm periods yet persistent in the tails.";
+        alts.push("Add <code>cdtest</code> to report cross-sectional dependence at each quantile.");
+      } else {
+        cmd = "xtpkpss, model(constbreak)";
+        why = "Sharp breaks in the level with a <b>stationarity null</b> (H₀ = stationary). Each unit may have its own dates (estimated by Bai–Perron, number chosen by LWZ), and CSD is bootstrapped. Reject ⇒ evidence of a unit root.";
+        alts.push("Use <code>model(trendbreak)</code> if the trend slope also shifts.");
+        alts.push("<code>xtpqroot</code> for the opposite (unit-root) null — running both is <b>confirmatory analysis</b>.");
+      }
+      warns.push("State the null explicitly: <code>xtpkpss</code> has H₀ = <b>stationary</b>; <code>xtpqroot</code> has H₀ = <b>unit root</b>.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+
+    if (S.goal === "coint"){
+      if (S.extra === "loadings"){
+        cmd = "xtcadfcoint, brkslope brkloadings";
+        why = "You suspect the break hits the <b>factor loadings</b> as well. Banerjee–Carrion (2025) is the only test here that allows breaks in the <b>deterministic part, the cointegrating vector AND the loadings</b> simultaneously, with CCE + factors for dependence.";
+        alts.push("<code>xtbreakcoint</code> (2015) if only the deterministic part breaks.");
+      } else if (S.shape === "smooth" || S.shape === "both"){
+        cmd = "xtnonlincoint fffff";
+        why = "A <b>gradual</b> shift in the equilibrium. The Fourier (FFFFF) route needs no break date; the <code>ecm</code> subcommand additionally allows <b>asymmetric</b> adjustment. CSD is handled by a sieve bootstrap.";
+        alts.push("<code>xtpfardl</code> if you want the long-run coefficients themselves, not just a test.");
+      } else if (S.csd === "yes"){
+        cmd = "xtpcointegwe, model(regimeshift)";
+        why = "Sharp break + CSD. Westerlund–Edgerton (2008) puts break dummies in the residual ADF regressions and removes dependence with <b>common factors</b> (number by Bai–Ng). <b>H₀ = no cointegration</b>; rejecting means the long-run relation exists and shifts.";
+        alts.push("<code>xtbreakcoint</code> — Banerjee–Carrion (2015), same null, factor-based.");
+        alts.push("<code>xtlmbreak</code> if you prefer the <b>cointegration</b> null with multiple breaks.");
+        alts.push("<code>xtpcointegboot</code> for a bootstrap version when N is not large.");
+      } else {
+        cmd = "xtlmbreak, model(levelbreak)";
+        why = "Sharp breaks in level/trend with <b>H₀ = cointegration</b> (Westerlund 2006). It allows an unknown number of breaks at <b>different dates per unit</b> and endogenous regressors.";
+        alts.push("<code>xtpcointegwe</code> for the opposite null with common factors.");
+      }
+      warns.push("Check the null direction before reading the p-value — the tests here disagree on it.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+
+    // ---- goal === estimate ----
+    if (S.extra === "endog"){
+      return {cmd:"xtbfkbreak",
+        why:"A regressor is <b>endogenous</b>. Baltagi–Feng–Kao estimate a <b>common</b> break in heterogeneous panels with CCE while instrumenting the endogenous regressor: <code>xtbfkbreak y (x = z), breaks(1)</code>.",
+        alts:["Needs a valid instrument — without one, no method can save you."], warns:warns};
+    }
+    if (S.extra === "loadings"){
+      return {cmd:"xtkpybreak break, loadings",
+        why:"You suspect breaks in the <b>factor loadings</b>. Baltagi–Feng–Wang (2025) estimate two independent break sets — <b>K₀ in the slopes</b> and <b>K₁ in the loadings</b> — jointly by Bai–Perron, and (via KPY 2011) stay valid when the factors are <b>I(1)</b>.",
+        alts:["<code>xtkpybreak cce</code> first, to get the mean slope without breaks as a benchmark."], warns:warns};
+    }
+    if (S.extra === "quantile"){
+      return {cmd:"xtquantilebreak",
+        why:"Breaks that differ <b>across quantiles</b>: quantile regression + adaptive fused lasso detects 'partial' changes that a mean-based estimator averages away.",
+        alts:["<code>xtcbc</code> if the heterogeneity is across <b>coefficients</b> rather than quantiles."], warns:warns};
+    }
+
+    if (S.coefs === "some"){
+      cmd = "xtcbc";
+      why = "You suspect <b>only some coefficients</b> break. CBC (Kaddoura 2025) gives each coefficient its <b>own</b> number of breaks and dates, leaving genuinely stable ones unbroken — avoiding the variance inflation a vector break causes. Built for <b>large N, small T</b>.";
+      alts.push("Add <code>csdemean</code> to absorb interactive (common-factor) effects.");
+      alts.push("Compare with <code>xtbreakmodel, method(pls)</code> to see how much over-splitting a vector break causes.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+    if (S.timing === "groups" || S.timing === "unk"){
+      cmd = "xtbreakmodel, method(gagfl) groups(2)";
+      why = "Units break at different dates but not all differently — there are <b>latent groups</b>. GAGFL (Okui–Wang 2021) discovers the groups, their members <b>and</b> each group's break dates, by alternating grouped fixed effects with an adaptive group fused lasso.";
+      alts.push("Choose <code>groups(#)</code> by BIC over G = 2, 3, 4…");
+      alts.push("<code>method(pls)</code> is the special case G = 1 (a common break).");
+      if (S.size === "smallN") warns.push("Latent groups need enough units — rule of thumb N ≥ 5 × G.");
+      warns.push("GAGFL is the <b>heaviest</b> method; reduce <code>nsim()</code>/<code>ngrid()</code> while exploring.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+    if (S.timing === "diff"){
+      cmd = "xtfmg fccemg";
+      why = "Every unit breaks at its <b>own</b> date — dummies would explode in number and CCE alone assumes a common break. Fourier CCEMG adds <b>unit-specific Fourier terms</b> that absorb the heterogeneously-timed breaks while cross-section averages filter the common shock.";
+      alts.push("<code>xtfmg map</code> first — it diagnoses your panel and recommends an estimator.");
+      alts.push("<code>xtbreakmodel, method(gagfl)</code> if the timing actually clusters into groups.");
+      warns.push("Fourier absorbs the breaks but does <b>not</b> report break dates. If you need the dates, use a group/dummy method.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+
+    // common timing, all coefficients, sharp
+    if (S.shape === "smooth" || S.shape === "both"){
+      cmd = "xtfmg fccemg";
+      why = "A <b>gradual</b> change with a common shock: the Fourier CCE Mean Group estimator bends smoothly with the transition while the cross-section averages remove the factor.";
+      alts.push("<code>xtfmg all</code> compares all six estimators (FE, MG, CCEMG, SURMG, F-SURMG, F-CCEMG) in one table.");
+      return {cmd:cmd, why:why, alts:alts, warns:warns};
+    }
+    if (S.csd === "yes"){
+      cmd = "xtkpybreak break, nbreaks(1)";
+      why = "A <b>common sharp break</b> with cross-sectional dependence. CCE removes the common shock (and stays valid even if the factors are <b>I(1)</b>, per KPY 2011), while the break dates are estimated by the Bai–Perron dynamic-programming algorithm.";
+      alts.push("<code>xtbreakmodel, method(pls)</code> — fused-lasso alternative that selects the number of breaks automatically.");
+      alts.push("<code>xtbfkbreak</code> if a regressor is endogenous.");
+    } else {
+      cmd = "xtbreakmodel, method(pls)";
+      why = "A <b>common vector break</b> with no dependence to remove. The adaptive group fused lasso selects the number and dates of the breaks automatically, and is fast and well understood.";
+      alts.push("<code>method(bfk)</code> — quick sequential least squares; <code>method(sara)</code> — nonparametric, robust to heavy tails.");
+    }
+    return {cmd:cmd, why:why, alts:alts, warns:warns};
+  }
+
+  function render(){
+    var r = decide();
+    var h = '<div class="lab">✅ Recommended</div><div class="cmd">' + r.cmd + '</div>' +
+            '<div class="why">' + r.why + '</div>';
+    if (r.alts && r.alts.length){
+      h += '<div class="alts"><b>Also consider:</b><ul style="margin:6px 0 0;padding-left:20px">';
+      r.alts.forEach(function(a){ h += "<li>" + a + "</li>"; });
+      h += "</ul></div>";
+    }
+    if (r.warns && r.warns.length){
+      r.warns.forEach(function(w){ h += '<div class="warn"><b>⚠ Watch out:</b> ' + w + "</div>"; });
+    }
+    document.getElementById("res").innerHTML = h;
+  }
+  render();
+})();
+</script>
+</body>
+</html>

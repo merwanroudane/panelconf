@@ -57,6 +57,7 @@ Single self-contained files — double-click to open, no internet needed.
 
 | File | Language | Description |
 |---|---|---|
+| **`panel_breaks_decision_guide.html`** ⭐ | English | **Which method should I use?** — an *interactive* decision tool: answer 7 diagnostic questions and get the recommended command with the reason, alternatives and warnings. Plus a decision flowchart, 18 "use when / avoid when" method profiles, a comparison matrix, 6 red flags, and a cheat-sheet. |
 | `panel_structural_breaks_guide_AR.html` | **العربية** | دليل شامل لأنواع التغيرات الهيكلية: مشترك/غير متجانس/مجموعات كامنة، Dummy vs Fourier vs Regularization، خريطة اختيار المنهج، جداول ومراجع |
 | `panel_3rd_generation_lecture.html` | English | Third-generation lecture: generations, tests, estimators, interactive CSD+break demo |
 
