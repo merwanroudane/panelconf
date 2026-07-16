@@ -16,9 +16,10 @@ a diagram, and runnable Stata do-files.
 |---|---|
 | **`/` (root)** | **Streamlit app — Structural Breaks guide** (the tests & estimators) |
 | **`panel_preconcepts_guide/`** | **Streamlit app — Pre-concepts guide** (the foundations *before* 3rd generation) |
+| **`panel_breaks_lab/`** | **Streamlit app — Animated Simulation Lab** (every chart has a ▶ PLAY button) |
 | **`guides/`** | Self-contained HTML guides (open in any browser, work offline) |
-| **`lecture/`** | LaTeX lecture notes (`.tex` + compiled `.pdf`) and the generations diagram |
-| **`stata_do_files/`** | 18 beginner do-files — one per command, on real data |
+| **`lecture/`** | Two LaTeX lectures (`.tex` + compiled `.pdf`) and the generations diagram |
+| **`stata_do_files/`** | 21 beginner do-files — one per command, on real data |
 
 ---
 
@@ -61,10 +62,32 @@ Single self-contained files — double-click to open, no internet needed.
 | `panel_structural_breaks_guide_AR.html` | **العربية** | دليل شامل لأنواع التغيرات الهيكلية: مشترك/غير متجانس/مجموعات كامنة، Dummy vs Fourier vs Regularization، خريطة اختيار المنهج، جداول ومراجع |
 | `panel_3rd_generation_lecture.html` | English | Third-generation lecture: generations, tests, estimators, interactive CSD+break demo |
 
+## 3b. Streamlit app — Animated Simulation Lab (`panel_breaks_lab/`)
+
+**Watch the concepts move.** Every chart has a **▶ PLAY** button.
+
+```bash
+cd panel_breaks_lab
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Units jumping together (common break) · jumping one by one (heterogeneous) · two hidden clusters
+and GAGFL re-assigning them (latent groups) · independent series **synchronising** as a common
+factor takes over, and a test's false-rejection rate exploding (CSD) · the break **morphing** from
+gradual to sharp while Dummy and Fourier race (the winner switches) · turning **λ** up until
+spurious breaks fuse away — then real ones die too (regularization) · and the **SSR grid search**
+sweeping the sample to lock onto the break date.
+
 ## 4. Lecture notes (`lecture/`)
 
-- **`Third_Generation_Panel_Lecture.pdf`** — 20-page colour lecture (compiled)
-- **`Third_Generation_Panel_Lecture.tex`** — LaTeX source (compile with `latexmk -pdf`)
+- **`Panel_Methods_Organized_Lecture.pdf`** — 13-page colour lecture: **a map of the whole field**.
+  The ladder of relaxed assumptions (Pooled → FE → **MG/PMG** → **CCE/PANIC** → breaks → frontier).
+  Every method gets: *the idea* · *when to use it* ✅ · *when NOT to* ❌ · *how it differs from its
+  neighbour*. Includes MG vs PMG vs DFE, CSA vs factors, and a decision map.
+- **`Third_Generation_Panel_Lecture.pdf`** — 20-page colour lecture on third-generation methods
+  (pre-concepts, breaks, CSD, regularization, Fourier, tests, worked application, FAQ, exercises)
+- Both `.tex` sources included (compile with `latexmk -pdf`)
 - **`panel_three_generations.png`** — bilingual (عربي/English) three-generations diagram
 
 ## 5. Stata do-files (`stata_do_files/`)
