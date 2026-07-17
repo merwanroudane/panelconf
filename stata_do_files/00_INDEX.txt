@@ -1,0 +1,145 @@
+================================================================================
+ INDEX OF THE DO-FILES  -  فهرس ملفات التدريب
+ Structural Breaks in Panel Data  |  Dr Merwan Roudane
+================================================================================
+
+ One line per file: what it contains and when you'd open it.
+ سطر واحد لكل ملف: ماذا بداخله ومتى تفتحه.
+
+ New here? Open 00_START_HERE.do first, then work down the list.
+ مبتدئ؟ افتح 00_START_HERE.do أولًا، ثم انزل في القائمة.
+
+ Full detail on each command -> COMMANDS_reference.txt
+ Install everything           -> INSTALL_commands.txt
+ Cite the papers              -> ../papers/references.txt
+
+
+--------------------------------------------------------------------------------
+ SETUP  -  الإعداد
+--------------------------------------------------------------------------------
+ 00_START_HERE.do    Loads the real Grunfeld data, xtset, and checks everything
+                     works. Explains the data and how to run any file.
+                     يحمّل البيانات ويتأكد أن كل شيء يعمل. ابدأ هنا.
+
+
+--------------------------------------------------------------------------------
+ A. UNIT-ROOT / STATIONARITY TESTS  -  اختبارات جذر الوحدة والاستقرار
+--------------------------------------------------------------------------------
+ 01_xtpkpss.do       Panel KPSS stationarity test with structural breaks.
+                     H0: STATIONARY.  Use to ask "is my series I(1)?"
+                     اختبار استقرار مع كسور.
+
+ 02_xtpqroot.do      Quantile unit-root test (CIPS-tau) + Fourier smooth/sharp
+                     break test (tFR).  H0: UNIT ROOT.
+                     جذر وحدة كمّي + كسور فورييه.
+
+
+--------------------------------------------------------------------------------
+ B. COINTEGRATION TESTS  -  اختبارات التكامل المشترك
+--------------------------------------------------------------------------------
+ 03_xtlmbreak.do     LM cointegration test, multiple breaks.  H0: COINTEGRATION.
+                     تكامل مشترك مع كسور متعددة.
+
+ 04_xtpcointegwe.do  Cointegration with break + common factors (Westerlund-
+                     Edgerton).  H0: NO cointegration.
+                     تكامل مع كسر وعوامل مشتركة.
+
+ 05_xtpcointegboot   Bootstrap cointegration (FM-OLS, sieve bootstrap).
+       .do           H0: COINTEGRATION.
+                     تكامل بالبوتستراب.
+
+ 06_xtbreakcoint.do  Cointegration + breaks + cross-section dependence
+                     (Banerjee-Carrion 2015).  H0: NO cointegration.
+                     تكامل مع كسور واعتماد مقطعي.
+
+ 07_xtccecoint.do    CCE-based cointegration test (Banerjee-Carrion 2017).
+                     H0: NO cointegration.
+                     تكامل بمنهج CCE.
+
+ 08_xtcadfcoint.do   MOST GENERAL: breaks in the deterministic part, the
+                     cointegrating vector AND the loadings (Banerjee-Carrion
+                     2025).  H0: NO cointegration.
+                     الأعمّ: كسور في كل مكونات النموذج.
+
+ 09_xtnonlincoint    Nonlinear ECM cointegration (asymmetric adjustment) AND the
+       .do           FFFFF Fourier panel cointegration test.
+                     تكامل غير خطي + اختبار فورييه FFFFF.
+
+
+--------------------------------------------------------------------------------
+ C. BREAK ESTIMATORS  -  مقدّرات الكسر (تقدّر التواريخ والمعاملات)
+--------------------------------------------------------------------------------
+ 10_xtbreakmodel.do  Estimate breaks - 4 engines: pls (common), bfk (fast),
+                     sara (nonparametric), gagfl (LATENT GROUPS).
+                     تقدير الكسور بأربع طرق.
+
+ 11_xtcbc.do         Coefficient-by-coefficient breaks - each coefficient breaks
+                     on its own; stable ones stay unbroken.
+                     كسر لكل معامل على حدة.
+
+ 12_xtkpybreak.do    CCE valid with I(1) factors + breaks in slopes AND factor
+                     loadings.  Also works as a normal estimation command.
+                     CCE مع عوامل I(1) وكسور في الميول والتحميلات.
+
+ 13_xtbfkbreak.do    Common break with CCE + an ENDOGENOUS regressor (via an
+                     instrument).
+                     كسر مشترك مع متغير داخلي المنشأ.
+
+ 14_xtquantilebreak  Shrinkage quantile regression - breaks that differ across
+       .do           quantiles (good vs bad times).
+                     كسور عبر الكمّيات.
+
+ 15_xtdynestimb.do   Dynamic panel estimators robust to breaks and CSD (for
+                     models with a lagged dependent variable).
+                     مقدّرات ديناميكية متينة ضد الكسور.
+
+ 16_xtpvarcoint.do   Panel VAR / VECM with cointegration, breaks and CSD; gives
+                     impulse responses and variance decomposition.
+                     بانل VAR/VECM مع تكامل وكسور.
+
+
+--------------------------------------------------------------------------------
+ D. BREAK DETECTION  -  كشف الكسور (يكتشف مَن ومتى)
+--------------------------------------------------------------------------------
+ 17_xtgets.do        Indicator saturation: discovers WHICH units broke and WHEN,
+                     without you specifying anything. A diagnostic.
+                     يكتشف أي وحدة انكسرت ومتى.
+
+
+--------------------------------------------------------------------------------
+ E. 2nd-GEN ESTIMATORS, FOURIER ARDL, CAUSALITY
+    مقدّرات الجيل الثاني وARDL بفورييه والسببية
+--------------------------------------------------------------------------------
+ 18_xtfmg.do         Six estimators (FE, MG, CCEMG, SURMG, F-SURMG, F-CCEMG) +
+                     a "map" that RECOMMENDS the estimator your panel needs.
+                     ستة مقدّرات + تشخيص يوصي بالمناسب. (ابدأ بـ map)
+
+ 19_xtpfardl.do      Fourier-augmented panel ARDL / CS-ARDL: long-run AND
+                     short-run coefficients with a smooth break.
+                     ARDL بفورييه - المدى الطويل والقصير.  (يحتاج xtdcce2)
+
+ 20_xtpcaus.do       Panel Granger causality: Fourier Toda-Yamamoto (PFTY) and
+                     Panel Quantile Causality (PQC).  Run BOTH directions.
+                     السببية في البانل - في الاتجاهين.
+
+
+--------------------------------------------------------------------------------
+ RUN EVERYTHING  -  تشغيل الكل
+--------------------------------------------------------------------------------
+ 99_RUN_ALL.do       Runs files 01-20 in order (each loads its own data).
+                     يشغّل كل الملفات بالترتيب.
+
+
+================================================================================
+ WHICH FILE DO I OPEN?  -  أي ملف أفتح؟
+================================================================================
+ First step, always .................... 00 (check data) then 17/18 map (detect)
+ Testing for a unit root ............... 01, 02
+ Testing for cointegration ............. 03-09
+ Estimating where/what breaks .......... 10-16
+ Second-gen / Fourier ARDL / causality . 18, 19, 20
+
+ Reminder: the tests DISAGREE on the null hypothesis. Check the H0 line in
+ COMMANDS_reference.txt before reading any p-value.
+ تذكير: الاختبارات تختلف في اتجاه الفرضية - راجع H0 قبل قراءة أي p-value.
+================================================================================

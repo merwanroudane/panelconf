@@ -43,6 +43,7 @@ Both ship with Stata; nothing to download. The panel is short (T = 20) — ideal
 
 | File | What it gives you |
 |---|---|
+| **`00_INDEX.txt`** | **One line per do-file** — what each contains and when to open it. Read this to navigate the 21 files. |
 | **`COMMANDS_reference.txt`** | **All 20 commands**: what each *does*, its **H₀** (the tests disagree!), its key options, its do-file, and its source paper. Ends with a quick-lookup table ("which command do I use?") and the workflow. |
 | **`INSTALL_commands.txt`** | Every `ssc install` line — run once before you start. |
 
